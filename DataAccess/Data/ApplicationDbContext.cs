@@ -15,8 +15,6 @@
         public DbSet<Category> Categories { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<MoreResource> MoreResources { get; set; }
-        public DbSet<ResourceLink> ResourceLinks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 
@@ -52,15 +50,6 @@
                 .HasForeignKey(c => c.ImageId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<MoreResource>()
-                .HasMany(m => m.Images)
-                .WithOne()
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<ResourceLink>()
-                .HasOne(r => r.MoreResource)
-                .WithMany(m => m.Links)
-                .HasForeignKey(r => r.MoreResourceId);
 
 
             modelBuilder.Entity<Category>().HasData(
