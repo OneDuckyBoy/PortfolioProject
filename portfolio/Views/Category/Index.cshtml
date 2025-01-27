@@ -5,7 +5,7 @@
 }
 <h1>Categories</h1>
 @model IEnumerable<Category>
-
+<a href="/Category/create" class="back-button">Create new category</a>
 <table class="table">
 	<tr>
 		<th>
@@ -16,6 +16,7 @@
 		</th>
 		<th></th>
 	</tr>
+
 	@foreach (var item in Model)
 	{
 		<tr>

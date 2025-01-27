@@ -51,6 +51,7 @@
             <p>@Model.Name</p>
             <label>Description:</label>
             <p>@Model.Description</p>
+            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
         </div>
         <a href="/Category/Index" class="back-button">Back list</a>
     </div>
