@@ -1,4 +1,5 @@
 ﻿using Core.Repositories;
+using Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
-    public class Service<T> : IService<T> where T : class
+    public class Service<T> : IService<T> where T : BaseEntity
     {
         private readonly IRepository<T> _repository;
         public Service(IRepository<T> repository)
@@ -21,7 +22,8 @@ namespace Core.Services
 
         public bool EntityExists(int id)
         {
-            return _repository.EntityExists(id);
+            bool boo = _repository.EntityExists(id);
+            return boo;
         }
 
         public void Delete(int id)

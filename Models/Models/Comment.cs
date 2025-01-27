@@ -1,14 +1,10 @@
-﻿namespace Portfolio.Models
-{
-    public class Comment
-    {//
-		private int id;
+﻿using Models.Models;
 
-		public int Id
-		{
-			get { return id; }
-			set { id = value; }
-		}
+namespace Portfolio.Models
+{
+    public class Comment : BaseEntity
+    {//
+		
 		private string text;
 
 		public string Text

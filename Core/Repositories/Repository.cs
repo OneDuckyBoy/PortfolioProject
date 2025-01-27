@@ -1,4 +1,5 @@
-﻿using Portfolio.Data;
+﻿using Models.Models;
+using Portfolio.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext _context;
         public Repository(ApplicationDbContext context)
@@ -39,7 +40,7 @@ namespace Core.Repositories
 
         }
 
-        public T Update(T entity)
+        public T Update( T entity)
         {
             T entity1 = _context.Set<T>().Update(entity).Entity;
             _context.SaveChanges();

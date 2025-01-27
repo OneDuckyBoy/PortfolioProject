@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.Models
 {
-    public class User
+    public class User : BaseEntity
     {//
-        [Key]
-        public int Id { get; set; }
 
         [Required]
         [MaxLength(50)]

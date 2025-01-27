@@ -1,17 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.Models
 {
-    public class Category
+    public class Category : BaseEntity
     {//
-        [Key]
-        public int Id { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(100), MinLength(3)]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(500)]
+        [MaxLength(500), MinLength(3)]
         public string Description { get; set; } = string.Empty;
 
         public ICollection<Project> Projects { get; set; } = new List<Project>(); // Navigation property

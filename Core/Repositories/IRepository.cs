@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Models.Models;
 
 namespace Core.Repositories
 {
-    public interface IRepository <T> where T : class
+    public interface IRepository <T> where T : BaseEntity
     {
         IEnumerable<T> GetAll();
         T GetById(int id);
