@@ -1,12 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Portfolio.Data;
+﻿using Portfolio.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace portfolio.Model.Repositories
+namespace Core.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {

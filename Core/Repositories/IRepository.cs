@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace portfolio.Model.Repositories
+namespace Core.Repositories
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository <T> where T : class
     {
         IEnumerable<T> GetAll();
         T GetById(int id);
@@ -14,6 +14,5 @@ namespace portfolio.Model.Repositories
         T Update(T entity);
         void Delete(int id);
         bool EntityExists(int id);
-
     }
 }
