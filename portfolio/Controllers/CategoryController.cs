@@ -17,5 +17,11 @@ namespace Portfolio.Controllers
             View(categories);
             return View();
         }
+
+        public IActionResult Details(int id)
+        {
+            var category = _categoryService.GetById(id);
+            return View(category);
+        }
     }
 }
