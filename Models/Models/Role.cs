@@ -3,7 +3,7 @@
 namespace Portfolio.Models
 {
     public class Role
-    {
+    {//
         [Key]
         public int Id { get; set; }
 

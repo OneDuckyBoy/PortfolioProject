@@ -1,7 +1,7 @@
 ﻿namespace Portfolio.Models
 {
     public class Comment
-    {
+    {//
 		private int id;
 
 		public int Id

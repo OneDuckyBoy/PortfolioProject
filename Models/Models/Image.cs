@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.Models
-{
+{//
     public class Image
     {
         [Key]
