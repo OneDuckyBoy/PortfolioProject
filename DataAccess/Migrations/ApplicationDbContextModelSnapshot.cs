@@ -8,7 +8,7 @@ using Portfolio.Data;
 
 #nullable disable
 
-namespace Portfolio.Migrations
+namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -35,12 +35,18 @@ namespace Portfolio.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("ImageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ImageId")
+                        .IsUnique();
 
                     b.ToTable("Categories");
 
@@ -49,36 +55,42 @@ namespace Portfolio.Migrations
                         {
                             Id = 1,
                             Description = "Приложения, или сайтове, които съм напрвил",
+                            ImageId = 1,
                             Name = "Програмиране"
                         },
                         new
                         {
                             Id = 2,
                             Description = "Това са проекти, свързани със 3D моделиране и принтиране",
+                            ImageId = 2,
                             Name = "3D моделиране"
                         },
                         new
                         {
                             Id = 3,
                             Description = "Това са проекти, които използват техника, а може би и 3D моделиране",
+                            ImageId = 3,
                             Name = "Електроника"
                         },
                         new
                         {
                             Id = 4,
                             Description = "Интересни снимки, които съм правил наскоро",
+                            ImageId = 4,
                             Name = "Фотография"
                         },
                         new
                         {
                             Id = 5,
                             Description = "Опити за рисуване ; )",
+                            ImageId = 5,
                             Name = "Рисуване"
                         },
                         new
                         {
                             Id = 6,
                             Description = "Това са други проекти, които не съвпадат с другите категории",
+                            ImageId = 6,
                             Name = "Други : )"
                         });
                 });
@@ -133,6 +145,74 @@ namespace Portfolio.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Path = "path1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Path = "path2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Path = "path3"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Path = "path4"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Path = "path5"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Path = "path6"
+                        });
+                });
+
+            modelBuilder.Entity("Portfolio.Models.LikedComments", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "CommentId");
+
+                    b.HasIndex("CommentId");
+
+                    b.ToTable("LikedComments");
+                });
+
+            modelBuilder.Entity("Portfolio.Models.LikedProjects", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ProjectId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("LikedProjects");
                 });
 
             modelBuilder.Entity("Portfolio.Models.Project", b =>
@@ -150,6 +230,9 @@ namespace Portfolio.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -160,9 +243,16 @@ namespace Portfolio.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Projects");
                 });
@@ -239,6 +329,17 @@ namespace Portfolio.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Portfolio.Models.Category", b =>
+                {
+                    b.HasOne("Portfolio.Models.Image", "Image")
+                        .WithOne()
+                        .HasForeignKey("Portfolio.Models.Category", "ImageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+                });
+
             modelBuilder.Entity("Portfolio.Models.Comment", b =>
                 {
                     b.HasOne("Portfolio.Models.Image", "Image")
@@ -255,10 +356,48 @@ namespace Portfolio.Migrations
                     b.HasOne("Portfolio.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Image");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Portfolio.Models.LikedComments", b =>
+                {
+                    b.HasOne("Portfolio.Models.Comment", "Comment")
+                        .WithMany("LikedComments")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Portfolio.Models.User", "User")
+                        .WithMany("LikedComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Portfolio.Models.LikedProjects", b =>
+                {
+                    b.HasOne("Portfolio.Models.Project", "Project")
+                        .WithMany("LikedProjects")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Portfolio.Models.User", "User")
+                        .WithMany("LikedProjects")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Project");
 
@@ -273,7 +412,21 @@ namespace Portfolio.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Portfolio.Models.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.HasOne("Portfolio.Models.User", "User")
+                        .WithMany("Projects")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("Image");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Portfolio.Models.User", b =>
@@ -299,9 +452,25 @@ namespace Portfolio.Migrations
                     b.Navigation("Projects");
                 });
 
+            modelBuilder.Entity("Portfolio.Models.Comment", b =>
+                {
+                    b.Navigation("LikedComments");
+                });
+
             modelBuilder.Entity("Portfolio.Models.Project", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("LikedProjects");
+                });
+
+            modelBuilder.Entity("Portfolio.Models.User", b =>
+                {
+                    b.Navigation("LikedComments");
+
+                    b.Navigation("LikedProjects");
+
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
