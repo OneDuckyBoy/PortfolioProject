@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Role
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .details {
+            margin-top: 20px;
+        }
+        .details label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Category Details</h1>
+        <div class="details">
+            <label>Id:</label>
+            <p>@Model.Id</p>
+            <label>Name:</label>
+            <p>@Model.RoleType</p>
+            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        </div>
+        <a href="/Role/Index" class="back-button">Back to list</a>
+    </div>
+</body>
+</html>
