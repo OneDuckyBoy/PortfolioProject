@@ -6,7 +6,8 @@ namespace Portfolio.Models
     public class Image : BaseEntity
     {
 
+
         [Required]
-        public string Path { get; set; } = string.Empty;
+        public string Path { get; set; }
     }
 }

@@ -23,5 +23,6 @@ namespace Portfolio.Models
         public DateTime DateAdded { get; set; }
 
 
+        public ICollection<LikedComments> LikedComments { get; set; } = new List<LikedComments>();
     }
 }

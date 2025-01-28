@@ -1,5 +1,6 @@
 ﻿using Models.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Portfolio.Models
 {
@@ -14,5 +15,9 @@ namespace Portfolio.Models
         public string Description { get; set; } = string.Empty;
 
         public ICollection<Project> Projects { get; set; } = new List<Project>(); // Navigation property
+
+        
+        public int ImageId { get; set; }
+        public Image Image { get; set; }
     }
 }

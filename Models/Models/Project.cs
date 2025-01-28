@@ -19,5 +19,16 @@ namespace Portfolio.Models
         public Category Category { get; set; } // Navigation property
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+
+        public ICollection<LikedProjects> LikedProjects { get; set; } = new List<LikedProjects>();
+
+
+        public int UserId { get; set; }
+        public User User { get; set; }
+
+
+        public int? ImageId { get; set; } // Foreign key (optional)
+        public Image Image { get; set; } // Navigation property
     }
 }

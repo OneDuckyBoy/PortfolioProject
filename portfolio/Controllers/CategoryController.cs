@@ -8,15 +8,21 @@ namespace Portfolio.Controllers
     public class CategoryController : Controller
     {
         public readonly IService<Category> _categoryService;
-        public CategoryController(IService<Category> categoryService) 
+        public readonly IService<Image> _imageService;
+        public CategoryController(IService<Category> categoryService, IService<Image> imageService) 
         {
             _categoryService = categoryService;
+            _imageService = imageService;
         }
         public IActionResult Index()
         {
-            IEnumerable<Category> categories = _categoryService.GetAll();
-            View(categories);
-            return View();
+            IEnumerable<Image> images = _imageService.GetAll();
+            IEnumerable<Category> categories = _categoryService.GetAll().ToList();
+            foreach (var item in categories)
+            {
+                item.Image = images.ToArray()[item.ImageId-1];// [item.ImageId];
+            }
+            return View(categories);
         }
 
         public IActionResult Details(int id)
