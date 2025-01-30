@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Core.Repositories;
 using Core.Services;
+using Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Portfolio.Models;
 using Portfolio.Data;
+using Microsoft.AspNetCore.Identity.UI.Services;
 //using Portfolio.Data.ApplicationDbContext; // Alias to resolve conflict
 
 /* 
@@ -31,13 +33,26 @@ builder.Services.AddScoped(typeof(IRoleService<>), typeof(RoleService<>));
 
 
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<User, Role>(/*
+    options => options.SignIn.RequireConfirmedAccount = true*/
+    )
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-//builder.Services.AddIdentity<User, Role>()
+
+//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddRoles<Role>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>()
 //    .AddDefaultTokenProviders();
 
+//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddRoles<Role>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
+builder.Services.AddRazorPages();
+
+
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 //app.MapRazorPages();
@@ -49,6 +64,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapRazorPages();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
