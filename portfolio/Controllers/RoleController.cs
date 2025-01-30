@@ -6,8 +6,8 @@ namespace Portfolio.Controllers
 {
     public class RoleController : Controller
     {
-        public readonly IService<Role> _roleService;
-        public RoleController(IService<Role> roleService)
+        public readonly IRoleService<Role> _roleService;
+        public RoleController(IRoleService<Role> roleService)
         {
             _roleService = roleService;
         }

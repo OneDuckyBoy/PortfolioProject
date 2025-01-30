@@ -1,24 +1,18 @@
-﻿using Models.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Models.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.Models
 {
-    public class User : BaseEntity
+    public class User : IdentityUser<int>
     {//
 
-        [Required]
-        [MaxLength(50)]
-        public string Username { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        //public int RoleId { get; set; } // Foreign key
+        //public Role UserRole { get; set; } // Navigation property
 
-        [Required]
-        public string PasswordHash { get; set; } = string.Empty;
 
-        public int RoleId { get; set; } // Foreign key
-        public Role UserRole { get; set; } // Navigation property
+
 
         public int? ProfilePictureId { get; set; } // Foreign key
         public Image ProfilePicture { get; set; } // Navigation property

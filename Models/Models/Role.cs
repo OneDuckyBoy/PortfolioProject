@@ -1,13 +1,16 @@
-﻿using Models.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Models.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.Models
 {
-    public class Role : BaseEntity
+    public class Role : IdentityRole<int>
     {//
 
-        [Required]
-        public RoleType RoleType { get; set; }
+
+
+        //[Required]
+        //public RoleType RoleType { get; set; }
     }
     public enum RoleType
     {

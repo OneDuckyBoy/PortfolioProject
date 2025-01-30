@@ -1,13 +1,15 @@
 ﻿
 namespace Portfolio.Data
 {
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Models;
     using Models;
     using Models;
     using Portfolio.Models;
 
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User, Role, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -43,12 +45,12 @@ namespace Portfolio.Data
                 new Category { Id = 5, Name = "Рисуване", Description = "Опити за рисуване ; )", ImageId = 5 },
                 new Category { Id = 6, Name = "Други : )", Description = "Това са други проекти, които не съвпадат с другите категории", ImageId = 6 }
             );
-            // User -> Role (Many-to-One)
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.UserRole)
-                .WithMany()
-                .HasForeignKey(u => u.RoleId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // User -> Role (Many-to-One) automatic due to identity
+            //modelBuilder.Entity<User>()
+            //    .HasOne(u => u.UserRole)
+            //    .WithMany()
+            //    .HasForeignKey(u => u.RoleId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // User -> Image (One-to-One)
             modelBuilder.Entity<User>()
@@ -134,8 +136,8 @@ namespace Portfolio.Data
            
 
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, RoleType = RoleType.Admin },
-                new Role { Id = 2, RoleType = RoleType.User }
+                new Role { Id = 1, Name="Admin" },
+                new Role { Id = 2, Name = "User" }
             );
 
             base.OnModelCreating(modelBuilder);
