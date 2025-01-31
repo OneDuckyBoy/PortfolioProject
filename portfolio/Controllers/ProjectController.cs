@@ -2,6 +2,8 @@
 using Portfolio.Models;
 using Core.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.Controllers
 {
@@ -23,8 +25,32 @@ namespace Portfolio.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public IActionResult Index()
+        public IActionResult Index(ProjectIndexFilterModelView? filter)
         {
+
+            var query = _projectService.GetAll().AsQueryable();
+            if (filter.CategoryId != null)
+            {
+                query = query.Where(p => p.CategoryId == filter.CategoryId.Value);
+            }
+            if (filter.Title != null)
+            {
+                query = query.Where(p => p.Title.Contains(filter.Title));
+            }
+            if (filter.ShortDescription != null)
+            {
+                query = query.Where(p => p.ShortDescription.Contains(filter.ShortDescription));
+            }
+
+            var model = new ProjectIndexFilterModelView
+            {
+                CategoryId = filter.CategoryId,
+                Title = filter.Title,
+                ShortDescription = filter.ShortDescription,
+                Categories = new SelectList(_categoryService.GetAll(), "Id", "Name"),
+                Projects = query.Include(p => p.Category).Include(p=>p.Image).ToList(),
+            };
+
             IEnumerable<Project> projects = _projectService.GetAll().ToList();
             IEnumerable<Image> images = _imageService.GetAll();
             IEnumerable<Category> categories = _categoryService.GetAll().ToList();
@@ -33,7 +59,7 @@ namespace Portfolio.Controllers
                 item.Image = images.ToArray()[item.ImageId - 1];// [item.ImageId];
                 item.Category = categories.ToArray()[item.CategoryId - 1];
             }
-            return View(projects);
+            return View(model);
         }
 
         public IActionResult Create()

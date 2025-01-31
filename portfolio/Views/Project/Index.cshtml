@@ -3,8 +3,25 @@
 *@
 @{
 }
-@model IEnumerable<Project>
+@* @model IEnumerable<Project> *@
+@model ProjectIndexFilterModelView
 products
+<br />
+<h2>Filtering</h2>
+
+<form method="post">
+	<label for="Categoty">Категория</label><br />
+	<select id="Categoty" asp-for="CategoryId" asp-items="Model.Categories">
+		<option value="">Изберете категория</option>
+	</select><br />
+	<label for="Title">Заглавие на прект</label><br />
+	<input id="Title" asp-for="Title" /><br />
+	<label for="ShortDescription">Кратко описание</label><br />
+	<input id="ShortDescription" asp-for="ShortDescription" /><br />
+	<button type="submit">Запази</button>
+</form>
+
+
 <br />
 
 <a asp-action="Create" class="btn btn-primary">Create new Project</a>
@@ -17,14 +34,14 @@ products
 			@Html.DisplayNameFor(model => model.ShortDescription)
 		</th>
 		<th>
-			@Html.DisplayNameFor(model => model.Image.Path)
+			Image path
 		</th>
 		<th>
-			@Html.DisplayNameFor(model => model.Category)
+			Category
 		</th>
 	</tr>
 
-	@foreach (var item in Model)
+	@foreach (var item in Model.Projects)
 	{
 		<tr>
 			<td>
