@@ -59,6 +59,8 @@ namespace Portfolio.Controllers
                 item.Image = images.ToArray()[item.ImageId - 1];// [item.ImageId];
                 item.Category = categories.ToArray()[item.CategoryId - 1];
             }
+
+            ViewData["message from controller"] = "Hello from the backend : )";
             return View(model);
         }
 
