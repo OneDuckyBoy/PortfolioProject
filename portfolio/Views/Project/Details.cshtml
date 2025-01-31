@@ -3,7 +3,7 @@
 *@
 @{
 }
-@model Category
+@model Project
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,54 +11,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Details</title>
-    <style1>
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
         .container {
             max-width: 600px;
             margin: auto;
             background: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            
+            flex: 1;
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         .details {
             margin-top: 20px;
-            padding-bottom: 120px;
         }
-        .details label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        .details p {
-            margin: 5px 0;
 
+            .details label {
+                font-weight: bold;
+                display: block;
+                margin-top: 10px;
+            }
+
+            .details p {
+                margin: 5px 0;
+            }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
         }
-    </style1>
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Project Details</h1>
+        <h1>Category Details</h1>
         <div class="details">
             <label>Id:</label>
             <p>@Model.Id</p>
             <label>Name:</label>
-            <p>@Model.Name</p>
+            <p>@Model.Title</p>
             <label>Description:</label>
             <p>@Model.Description</p>
+            <label>Short description:</label>
+            <p>@Model.ShortDescription</p>
             <label>image path:</label>
             <p>@Model.Image.Path</p>
-            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+
+
+            <label>Category</label>
+            <p>@Model.Category.Name</p>
+
+            <label>Категория добавена от</label>
+            <p>@Model.User.Email</p>
+
+            <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn btn-primary" asp-action="Index">back to list</a>
         </div>
-        <a href="/Category/Index" class="back-button">Back to list</a>
+        
     </div>
 </body>
 </html>

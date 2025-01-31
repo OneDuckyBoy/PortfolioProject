@@ -28,7 +28,7 @@ namespace Portfolio.Models
         public User User { get; set; }
 
 
-        public int? ImageId { get; set; } // Foreign key (optional)
+        public int ImageId { get; set; } // Foreign key (optional)
         public Image Image { get; set; } // Navigation property
     }
 }

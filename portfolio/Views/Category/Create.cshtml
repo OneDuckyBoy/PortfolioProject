@@ -5,14 +5,18 @@
 }
 @model Category
 
-<form method="post">
+<form asp-action="Create" method="post">
     <div class="mb-3">
-        <label asp-for="Name"></label>
-        <input asp-for="Name">
-        <span asp-validation-for="Name" class="alert-danger"></span>
-        <label asp-for="Description"></label>
-        <input asp-for="Description">
-        <span asp-validation-for="Description" class="alert-danger"></span>
-        <button type="submit">Въведи</button>
+        <label asp-for="Name"></label><br>
+        <input asp-for="Name"><br>
+        <span asp-validation-for="Name" class="alert-danger"></span><br>
+        <label asp-for="Description"></label><br>
+        <input asp-for="Description"><br>
+        <span asp-validation-for="Description" class="alert-danger"></span><br>
+
+        <label asp-for="Image.Path"></label><br>
+        <input asp-for="Image.Path"><br>
+        <span asp-validation-for="Image.Path" class="alert-danger"></span><br>
+        <button type="submit">Въведи</button><br>
     </div>
 </form>

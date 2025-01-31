@@ -3,34 +3,41 @@
 *@
 @{
 }
-<h1>Categories</h1>
-@model IEnumerable<Category>
-<a asp-action="Create" class="back-button">Create new category</a>
+@model IEnumerable<Project>
+products
+<br />
+
+<a asp-action="Create" class="btn btn-primary">Create new Project</a>
 <table class="table">
 	<tr>
 		<th>
-			@Html.DisplayNameFor(model => model.Name)
+			@Html.DisplayNameFor(model => model.Title)
 		</th>
 		<th>
-			@Html.DisplayNameFor(model => model.Description)
+			@Html.DisplayNameFor(model => model.ShortDescription)
 		</th>
 		<th>
-			@Html.DisplayNameFor(model => model.Image)
+			@Html.DisplayNameFor(model => model.Image.Path)
 		</th>
-		<th></th>
+		<th>
+			@Html.DisplayNameFor(model => model.Category)
+		</th>
 	</tr>
 
 	@foreach (var item in Model)
 	{
 		<tr>
 			<td>
-				@Html.DisplayFor(modelItem => item.Name)
+				@Html.DisplayFor(modelItem => item.Title)
 			</td>
 			<td>
-				@Html.DisplayFor(modelItem => item.Description)
+				@Html.DisplayFor(modelItem => item.ShortDescription)
 			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.Image.Path)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Category.Name)
 			</td>
 			<td>
 				<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

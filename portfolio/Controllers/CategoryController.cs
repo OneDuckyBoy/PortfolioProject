@@ -28,6 +28,7 @@ namespace Portfolio.Controllers
         public IActionResult Details(int id)
         {
             var category = _categoryService.GetById(id);
+            category.Image =_imageService.GetById(category.Id);
             return View(category);
         }
         public IActionResult Create()
@@ -40,6 +41,8 @@ namespace Portfolio.Controllers
         {
             if (ModelState.IsValid)
             {
+
+               category.Image= _imageService.Add(category.Image);
                 _categoryService.Add(category);
                 return RedirectToAction("Index");
             }
