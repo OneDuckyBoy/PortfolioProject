@@ -92,13 +92,13 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateImageModel model)
+        public  IActionResult Create(CreateImageModel model)
         {
             if (ModelState.IsValid)
             {
                 if (model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    var imageUrl = await _imageUploadService.UploadImageAsync(model.ImageFile);
+                    var imageUrl =  _imageUploadService.UploadImageAsync(model.ImageFile).Result;
 
                     var image = new Image
                     {
