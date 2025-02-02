@@ -1,0 +1,20 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Image
+
+<div class="col-md-4 image-container">
+    <div class="card">
+        <img class="card-img-top" src="@Model.Path" alt="@Model.Path">
+        <div class="card-body">
+            <p class="card-text">ID: @Model.Id</p>
+            @* <p class="card-text">Path: @image.Path</p> *@
+            <p class="card-text">
+                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> 
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+            </p>
+        </div>
+    </div>
+</div>

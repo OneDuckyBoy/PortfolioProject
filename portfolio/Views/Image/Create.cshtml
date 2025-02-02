@@ -1,0 +1,25 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+    ViewData["Title"] = "Upload Image";
+}
+
+<h2>Upload Image</h2>
+
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="form-group">
+        <label for="ImageFile">Upload Image</label>
+        <input type="file" class="form-control" id="ImageFile" name="ImageFile" />
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

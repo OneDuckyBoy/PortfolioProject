@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Portfolio.Models.Image>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Images</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        .image-container {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Images</h1>
+        <a asp-action="Create" class="btn btn-primary mb-3">Add new Image</a>
+        <div class="form-group">
+            <label for="imagesPerRow">Images per row:</label>
+            <select id="imagesPerRow" class="form-control" style="width: auto;" onchange="updateGrid()">
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+        <div id="imageGrid" class="row">
+            @foreach (var image in Model)
+            {
+                <div class="col-md-4 image-container">
+                    <div class="card">
+                        <img class="card-img-top" src="@image.Path" alt="@image.Path">
+                        <div class="card-body">
+                            <p class="card-text">ID: @image.Id</p>
+                            @* <p class="card-text">Path: @image.Path</p> *@
+                            <p class="card-text">
+                                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@image.Id">Edit</a> |
+                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@image.Id">Details</a> |
+                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@image.Id">Delete</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateGrid() {
+            var imagesPerRow = document.getElementById("imagesPerRow").value;
+            var imageContainers = document.querySelectorAll(".image-container");
+            imageContainers.forEach(function(container) {
+                container.className = "col-md-" + (12 / imagesPerRow) + " image-container";
+            });
+        }
+        // Initialize the grid with the default value
+        updateGrid();
+    </script>
+</body>
+</html>

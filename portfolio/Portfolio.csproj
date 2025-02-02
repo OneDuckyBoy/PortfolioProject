@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="secrets.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="secrets.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.2" />
+    <PackageReference Include="dotenv.net" Version="3.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
