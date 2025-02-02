@@ -9,19 +9,26 @@ namespace Portfolio.Controllers
     {
         public readonly IService<Category> _categoryService;
         public readonly IService<Image> _imageService;
-        public CategoryController(IService<Category> categoryService, IService<Image> imageService) 
+        public readonly IImageUploadService _ImageUploadService;
+        public CategoryController(IService<Category> categoryService, IService<Image> imageService, IImageUploadService imageUploadService) 
         {
             _categoryService = categoryService;
             _imageService = imageService;
+            _ImageUploadService = imageUploadService;
         }
         public IActionResult Index()
         {
-            IEnumerable<Image> images = _imageService.GetAll();
-            IEnumerable<Category> categories = _categoryService.GetAll().ToList();
-            foreach (var item in categories)
+            var images = _imageService.GetAll().ToDictionary(img => img.Id);
+            var categories = _categoryService.GetAll().ToList();
+
+            foreach (var category in categories)
             {
-                item.Image = images.ToArray()[item.ImageId-1];// [item.ImageId];
+                if (images.TryGetValue(category.ImageId, out var image))
+                {
+                    category.Image = image;
+                }
             }
+
             return View(categories);
         }
 
@@ -37,16 +44,51 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public IActionResult Create(CategoryCreateViewModel model)
         {
+            //if (ModelState.IsValid)
+            //{
+
+            //   category.Image= _imageService.Add(category.Image);
+            //    _categoryService.Add(category);
+            //    return RedirectToAction("Index");
+            //}
+            //return View(category);
             if (ModelState.IsValid)
             {
+                // Handle the file upload using the imageUploadService
+                if (model.Image != null && model.Image.Length > 0)
+                {
 
-               category.Image= _imageService.Add(category.Image);
-                _categoryService.Add(category);
-                return RedirectToAction("Index");
+
+
+                    var imageUrl = _ImageUploadService.UploadImageAsync(model.Image).Result;
+
+
+                    var image = new Image
+                    {
+                        Path = imageUrl
+                    };
+
+                    image = _imageService.Add(image);
+                    // Save the category details to the database
+
+                    var category = new Category
+                    {
+                        Name = model.Name,
+                        Description = model.Description,
+                        Image = image,
+                        ImageId = image.Id
+                    };
+                    _categoryService.Add(category);
+
+                    return RedirectToAction("Index");
+                }
             }
-            return View(category);
+
+
+
+            return View(model);
         }
 
         public IActionResult Delete(int id)
@@ -66,6 +108,7 @@ namespace Portfolio.Controllers
         public IActionResult Edit(int id)
         {
             var category = _categoryService.GetById(id);
+            category.Image = _imageService.GetById(category.ImageId);
             return View(category);
         }
 
@@ -77,10 +120,16 @@ namespace Portfolio.Controllers
             {
                 return NotFound();
             }
+            
 
             if (ModelState.IsValid)
             {
-                    _categoryService.Update(category);
+                Category oldCategory = _categoryService.GetById(category.Id);
+                Image image= _imageService.GetById(oldCategory.ImageId);
+                _categoryService.Detach(oldCategory);
+                image.Path = category.Image.Path;
+                category.Image = image;
+                _categoryService.Update(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);

@@ -30,7 +30,8 @@
 				@Html.DisplayFor(modelItem => item.Description)
 			</td>
 			<td>
-				@Html.DisplayFor(modelItem => item.Image.Path)
+				@* @Html.DisplayFor(modelItem => item.Image.Path) *@
+				<img width= 300px class="" src="@item.Image.Path" alt="@item.Image.Path">
 			</td>
 			<td>
 				<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

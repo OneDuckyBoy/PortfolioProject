@@ -3,20 +3,24 @@
 *@
 @{
 }
-@model Category
+@model Portfolio.Models.CategoryCreateViewModel
 
-<form asp-action="Create" method="post">
+<h2>Create Category</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label asp-for="Name"></label><br>
-        <input asp-for="Name"><br>
+        <input asp-for="Name" class="form-control"><br>
         <span asp-validation-for="Name" class="alert-danger"></span><br>
+
         <label asp-for="Description"></label><br>
-        <input asp-for="Description"><br>
+        <input asp-for="Description" class="form-control"><br>
         <span asp-validation-for="Description" class="alert-danger"></span><br>
 
-        <label asp-for="Image.Path"></label><br>
-        <input asp-for="Image.Path"><br>
-        <span asp-validation-for="Image.Path" class="alert-danger"></span><br>
-        <button type="submit">Въведи</button><br>
+        <label asp-for="Image"></label><br>
+        <input asp-for="Image" type="file" class="form-control"><br>
+        <span asp-validation-for="Image" class="alert-danger"></span><br>
+
+        <button type="submit" class="btn btn-primary">Submit</button><br>
     </div>
 </form>

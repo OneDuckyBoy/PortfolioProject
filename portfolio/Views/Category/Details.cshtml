@@ -1,9 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@model Category
+﻿@model Portfolio.Models.Category
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,42 +6,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Details</title>
-    <style1>
+    <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
             background-color: #f4f4f4;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
+
         .container {
             max-width: 600px;
             margin: auto;
             background: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         .details {
             margin-top: 20px;
-            padding-bottom: 120px;
+            padding-bottom: 20px;
         }
-        .details label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        .details p {
-            margin: 5px 0;
 
+            .details label {
+                font-weight: bold;
+                display: block;
+                margin-top: 10px;
+            }
+
+            .details p {
+                margin: 5px 0;
+            }
+
+            .details img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin-top: 10px;
+            }
+
+        .back-button {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
         }
-    </style1>
+
+            .back-button:hover {
+                text-decoration: underline;
+            }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .btn:hover {
+                background-color: #0056b3;
+            }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Project Details</h1>
+        <h1>Category Details</h1>
         <div class="details">
             <label>Id:</label>
             <p>@Model.Id</p>
@@ -54,11 +90,11 @@
             <p>@Model.Name</p>
             <label>Description:</label>
             <p>@Model.Description</p>
-            <label>image path:</label>
-            <p>@Model.Image.Path</p>
-            <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <label>Image:</label>
+            <img src="@Model.Image.Path" alt="Image">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn">Edit</a>
         </div>
-        <a href="/Category/Index" class="back-button">Back to list</a>
+        <a asp-action="Index" class="btn">Back to list</a>
     </div>
 </body>
 </html>
