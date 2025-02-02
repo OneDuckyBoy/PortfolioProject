@@ -13,17 +13,19 @@ namespace Portfolio.Controllers
         private readonly IService<Project> _projectService;
         public readonly IService<Image> _imageService;
         public readonly IService<Category> _categoryService;
+        public readonly IImageUploadService _ImageUploadService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
 
-        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager)
+        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager, IImageUploadService ImageUploadService)
         {
             _projectService = projectService;
             _imageService = imageService;
             _categoryService = categoryService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _ImageUploadService = ImageUploadService;
         }
         public IActionResult Index(ProjectIndexFilterModelView? filter)
         {
@@ -56,8 +58,8 @@ namespace Portfolio.Controllers
             IEnumerable<Category> categories = _categoryService.GetAll().ToList();
             foreach (var item in projects)
             {
-                item.Image = images.ToArray()[item.ImageId - 1];// [item.ImageId];
-                item.Category = categories.ToArray()[item.CategoryId - 1];
+                item.Image = images.FirstOrDefault(img => img.Id == item.ImageId);
+                item.Category = categories.FirstOrDefault(cat => cat.Id == item.CategoryId);
             }
 
             ViewData["message from controller"] = "Hello from the backend : )";
@@ -92,9 +94,10 @@ namespace Portfolio.Controllers
                     Description = viewModel.Description,
                     CategoryId = viewModel.CategoryId
                 };
-                Image image = new Image();
-                image.Path = viewModel.Path;
 
+                
+                Image image = new Image();
+                image.Path = _ImageUploadService.UploadImageAsync(viewModel.Image).Result;
                 project.Image = _imageService.Add(image);
                 project.Category = _categoryService.GetById(project.CategoryId);
                 project.Category = _categoryService.GetById(project.CategoryId);
@@ -103,6 +106,7 @@ namespace Portfolio.Controllers
                 return RedirectToAction("Index");
             }
             viewModel.Categories = _categoryService.GetAll();
+            
             return View(viewModel);
         }
 

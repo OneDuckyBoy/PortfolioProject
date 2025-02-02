@@ -51,7 +51,8 @@ products
 				@Html.DisplayFor(modelItem => item.ShortDescription)
 			</td>
 			<td>
-				@Html.DisplayFor(modelItem => item.Image.Path)
+				@* @Html.DisplayFor(modelItem => item.Image.Path) *@
+				<img width=300px class="" src="@item.Image.Path" alt="@item.Image.Path">
 			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.Category.Name)

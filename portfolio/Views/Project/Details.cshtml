@@ -73,8 +73,8 @@
             <label>Short description:</label>
             <p>@Model.ShortDescription</p>
             <label>image path:</label>
-            <p>@Model.Image.Path</p>
-
+            @* <p>@Model.Image.Path</p> *@
+            <img width=300px class="" src="@Model.Image.Path" alt="@Model.Image.Path">
 
             <label>Category</label>
             <p>@Model.Category.Name</p>
