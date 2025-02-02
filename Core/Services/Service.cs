@@ -47,5 +47,10 @@ namespace Core.Services
         {
             return _repository.Update(entity);
         }
+
+        public void Detach(T entity)
+        {
+            _repository.Detach(entity);
+        }
     }
 }

@@ -15,5 +15,6 @@ namespace Core.Services
         T GetById(int id);
         T Update(T entity);
         bool EntityExists(int id);
+        void Detach(T entity);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Models.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Models.Models;
 using Portfolio.Data;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,14 @@ namespace Core.Repositories
         public bool EntityExists(int id)
         {
             return _context.Set<T>().Find(id) != null;
+        }
+        public void Detach(T entity)
+        {
+            var entry = _context.Entry(entity);
+            if (entry != null)
+            {
+                entry.State = EntityState.Detached;
+            }
         }
     }
 }

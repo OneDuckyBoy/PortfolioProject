@@ -15,5 +15,6 @@ namespace Core.Repositories
         T Update(T entity);
         void Delete(int id);
         bool EntityExists(int id);
+        void Detach(T entity);
     }
 }
