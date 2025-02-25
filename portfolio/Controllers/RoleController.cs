@@ -1,9 +1,11 @@
 ﻿using Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Models;
 
 namespace Portfolio.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         public readonly IRoleService<Role> _roleService;
