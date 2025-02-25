@@ -30,6 +30,8 @@ namespace Portfolio.Controllers
         public IActionResult Index(ProjectIndexFilterModelView? filter)
         {
 
+            var likedByUser= _projectService.GetAll().AsQueryable().Include(p => p.LikedProjects).ThenInclude(lp => lp.User).Where(u => u.User == _userManager.GetUserAsync(User).Result);
+
             var query = _projectService.GetAll().AsQueryable();
             if (filter.CategoryId != null)
             {
@@ -115,10 +117,26 @@ namespace Portfolio.Controllers
             Project project = _projectService.GetById(id);
             project.Category = _categoryService.GetById(project.CategoryId);
             project.Image = _imageService.GetById(project.ImageId);
-            var user= _userManager.FindByIdAsync((project.UserId+""));
-            if (user==null)
+            var user = _userManager.FindByIdAsync((project.UserId + ""));
+            if (user == null)
             {
 
+                project.User = new User();
+                project.User.Email = "unknow user";
+            }
+            project.User = user.Result;
+            Console.WriteLine();
+            return View(project);
+        }
+        [Route("Project/{id}")]
+        public IActionResult Project1(int id)
+        {
+            Project project = _projectService.GetById(id);
+            project.Category = _categoryService.GetById(project.CategoryId);
+            project.Image = _imageService.GetById(project.ImageId);
+            var user = _userManager.FindByIdAsync((project.UserId + ""));
+            if (user == null)
+            {
                 project.User = new User();
                 project.User.Email = "unknow user";
             }
