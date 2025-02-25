@@ -10,11 +10,13 @@ namespace Portfolio.Controllers
         public readonly IService<Category> _categoryService;
         public readonly IService<Image> _imageService;
         public readonly IImageUploadService _ImageUploadService;
-        public CategoryController(IService<Category> categoryService, IService<Image> imageService, IImageUploadService imageUploadService) 
+        private readonly IService<Project> _projectService;
+        public CategoryController(IService<Category> categoryService, IService<Image> imageService, IImageUploadService imageUploadService, IService<Project> projectService)
         {
             _categoryService = categoryService;
             _imageService = imageService;
             _ImageUploadService = imageUploadService;
+            _projectService = projectService;
         }
         public IActionResult Index()
         {
@@ -31,7 +33,66 @@ namespace Portfolio.Controllers
 
             return View(categories);
         }
+        [Route("Category/All")]
+        public IActionResult All()
+        {
+            var images = _imageService.GetAll().ToDictionary(img => img.Id);
+            var categories = _categoryService.GetAll().ToList();
 
+            foreach (var category in categories)
+            {
+                if (images.TryGetValue(category.ImageId, out var image))
+                {
+                    category.Image = image;
+                }
+            }
+
+            return View(categories);
+        }
+
+        //[Route("Category/{id}")]
+        //public IActionResult ProjectsInCategory(int id)
+        //{
+        //    var category = _categoryService.GetById(id);
+        //    if (category == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    category.Projects = _projectService.GetAll()
+        //        .Where(p => p.CategoryId == id).AsQueryable()
+        //        .Include(p => p.Image)
+        //        .Include(p => p.Comments)
+        //        .ToList();
+
+        //    if (category.Projects == null)
+        //    {
+        //        category.Projects = new List<Project>();
+        //    }
+
+        //    category.Image = _imageService.GetById(category.ImageId);
+        //    if (category.Image == null)
+        //    {
+        //        category.Image = new Image { Path = "default-image-path.jpg" }; // Provide a default image path
+        //    }
+
+        //    return View(category);
+        //}
+        [Route("Category/{id}")]
+
+        public IActionResult ProjectsInCategory(int id)
+        {
+            var category = _categoryService.GetById(id);
+            category.Projects = _projectService.GetAll().AsQueryable()
+         .Where(p => p.CategoryId == id)
+         .Include(p => p.Image)
+         .Include(p => p.Comments)
+         .ToList();
+
+            category.Image = _imageService.GetById(category.ImageId);
+
+            return View(category);
+        }
         public IActionResult Details(int id)
         {
             var category = _categoryService.GetById(id);

@@ -2,7 +2,306 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+@* <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+ *@
+
+<main>
+
+    <header class="hero">
+        <div class="hero-image-container">
+
+            <img class="hero-image" src="@ViewBag.Me_image" alt="My picture">
+
+        </div>
+        
+        <div class="hero-text">
+            <h1>Hello, welcome to my site</h1>
+            <p>In this site I will share my projects<br> and cool things I have done ;)</p>
+        </div>
+    </header>
+    <div class="divider"></div>
+
+    <section class="programingCategory">
+        @* <h2 class="programingCategoryText">Моите проекти по програмиране</h2> *@
+        <a asp-action="ProjectsInCategory" asp-controller="Category" asp-route-id="1">
+            <div class="category-image-wrapper">
+                <img class="category-image" src="@ViewBag.programing_image" alt="Programming Category">
+            </div>
+            <div class="programing-category-text">
+                <h2>Моите проекти по програмиране</h2>
+            </div>  
+        </a>
+    </section>
+    <div class="divider"></div>
+
+
+    <h1 class="my-other-projects-title">Моите други проекти</h1>
+
+    <div class="slider-wrapper">
+        <div class="slider-container">
+            @* <button class="prev" onclick="moveSlide(-1)">&#10094;</button> *@
+            <div class="slider">
+                @foreach (var item in ViewBag.categories)
+                {
+                    <div class="slide">
+                        <div class="card">
+                            <a asp-action="ProjectsInCategory" asp-controller="Category" asp-route-id="@item.Id">
+                                <img src="@item.Image.Path" alt="@item.Name" class=" card-img" style="width:100%; height:300px;object-fit: cover;">
+                            </a>
+
+                            <div class="container">
+                                <h4><b>@item.Name</b></h4>
+                                <p>@item.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="next" onclick="moveSlide(1)">&#10095;</button>
+        </div>
+        @* <button class="top-right-button" asp-controller="Category" asp-action="All" href="">Всички категории</button> *@
+        <a class="top-right-button" asp-controller="Category" asp-action="All">Всички категории</a>
+
+
+
+
+    </div>
+    <div class="divider"></div>
+
+    <section id="about-me" class="about-me">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+    </section>
+
+
+
+
+
+</main>
+
+
+<script src="https://kit.fontawesome.com/734a4e4265.js" crossorigin="anonymous"></script>
+<script></script>
+<style>
+   .programing-category-text {
+        margin: 20px 0; /* Добавя отстояние отгоре и отдолу */
+    }
+
+        .programing-category-text  h2 {
+            font-size: 2rem; /* Задава размер на шрифта */
+            color: #333; /* Задава цвят на текста */
+            /* color: white; */
+            z-index:2;
+        }
+    .hero {
+        position: relative;
+        width: 100%;
+        height: 550px; /* Adjust as needed */
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .hero-image {
+        height: 600px;
+        width: 100%;
+        object-fit: cover;
+        
+    }
+
+    .hero-image-container{
+        border-radius: 10px;
+        overflow: hidden; 
+        height: 100%;
+    }
+
+    .hero-text {
+        position: absolute;
+        top: 50%;
+        left: 5%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5); /* Optional: Adds readability */
+        padding: 20px;
+        color: white;
+        border-radius: 10px;
+    }
+
+    .hero h1 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+    }
+
+    body {
+        background-color: #fdfbf2;
+    }
+
+    .divider {
+        width: 100%;
+        height: 3px;
+        background-color: #ccc;
+        margin: 10px auto;
+    }
+
+    .programingCategory {
+        text-decoration: none;
+        width: 90%;
+        max-width: 1200px;
+        margin: 20px auto; /* Центриране */
+        text-align: left; /* Заглавието вляво */
+        color: white;
+    }
+
+    .category-image-wrapper {
+        position: relative;
+        overflow: hidden; /* За да предотвратиш излизането извън рамките */
+        border-radius: 10px;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .category-image {
+        width: 100%;
+        height: 400px; /* Можеш да променяш височината */
+        object-fit: cover;
+    }
+
+    .programingCategory a {
+        text-decoration: none; /* Премахва подчертаването на текста */
+        color: white;
+    }
+
+
+
+    /* slider*/
+
+    .slider-wrapper {
+        position: relative;
+        margin-top: 30px;
+    }
+
+    .top-right-button {
+        text-decoration:none;
+        position: absolute;
+        top: -50px;
+        right: 5px;
+        padding: 10px 20px;
+        background-color: darkorange;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.6s ease;
+    }
+
+        .top-right-button:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+    .card-img {
+        border-radius: 8px;
+    }
+
+    .slider-container {
+        position: relative;
+        max-width: 100%;
+        margin: auto;
+        overflow: hidden;
+        margin-top: 60px;
+        margin-bottom: 30px;
+    }
+
+    .slider {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slide {
+        min-width: 33.3%;
+        box-sizing: border-box;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        text-align: center;
+        height: 420px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: 50px; /* Set the width to a fixed value */
+        height: 50px; /* Set the height to the same value as the width */
+        padding: 0; /* Remove padding */
+        margin-top: -20px; /* Adjust margin to center the button vertically */
+        color: white;
+        font-weight: bold;
+        font-size: 40px;
+        transition: 0.6s ease;
+        border-radius: 50%; /* Make the button circular */
+        user-select: none;
+        background-color: darkorange;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .next {
+        right: 5px;
+    }
+
+    .prev {
+        left: 5px;
+    }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+</style>
+
+<script>
+    let slideIndex = 0;
+
+    function moveSlide(n) {
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const visibleSlides = 3;
+
+        slideIndex += n;
+
+        if (slideIndex < 0) {
+            slideIndex = totalSlides - visibleSlides;
+        } else if (slideIndex > totalSlides - visibleSlides) {
+            slideIndex = 0;
+        }
+
+        const offset = -slideIndex * (100 / visibleSlides);
+        document.querySelector('.slider').style.transform = `translateX(${offset}%)`;
+    }
+
+        setInterval(() => {
+        moveSlide(1);
+    }, 7*1000);
+</script>

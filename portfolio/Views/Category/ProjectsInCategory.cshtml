@@ -1,0 +1,63 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Category
+
+@{
+    ViewData["Title"] = "Projects in " + Model.Name;
+}
+
+<h1>Projects in @Model.Name</h1>
+
+<div class="container">
+    <div class="row">
+        @foreach (var project in Model.Projects)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img class="card-img-top" src="@project.Image.Path" alt="@project.Title" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@project.Title</h5>
+                        <p class="card-text">@project.ShortDescription</p>
+                        <p class="card-text"><small class="text-muted">@project.Comments.Count() comments</small></p>
+                        <a href="@Url.Action("Project1", "Project", new { id = project.Id })" class="btn btn-primary">View Project</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card-img-top {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: darkorange;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+</style>
