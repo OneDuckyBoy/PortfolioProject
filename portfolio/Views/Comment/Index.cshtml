@@ -1,0 +1,40 @@
+﻿@model CommentIndexFilterView
+
+
+<a asp-action="Create" class="back-button">Create new comment</a>
+
+<form method="get">
+    <div>
+        <label for="ProjectId">Project</label>
+        <select asp-for="ProjectId" asp-items="Model.Projects"></select>
+    </div>
+    <div>
+        <label for="UserId">User</label>
+        <select asp-for="UserId" asp-items="Model.Users"></select>
+    </div>
+    <div>
+        <label for="Content">Content</label>
+        <input asp-for="Content" />
+    </div>
+    <button type="submit">Filter</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>User</th>
+            <th>Content</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var comment in Model.Comments)
+        {
+            <tr>
+                <td>@comment.Project.Title</td>
+                <td>@comment.User.UserName</td>
+                <td>@comment.Text</td>
+            </tr>
+        }
+    </tbody>
+</table>
