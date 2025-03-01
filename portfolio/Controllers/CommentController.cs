@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Models;
+using System.Diagnostics.Contracts;
 using System.Security.Claims;
 
 namespace Portfolio.Controllers
@@ -14,17 +15,25 @@ namespace Portfolio.Controllers
     public class CommentController : Controller
     {
         public IService<Comment> _commentService { get; set; }
-        public IService<LikedComments> _likedCommentsService { get; set; }
         public IService<Project> _ProjectService { get; set; }
-        
+
         private readonly UserManager<User> _userManager;
 
-        public CommentController(IService<Comment> commentService, IService<Project> projectService, UserManager<User> userManager, IService<LikedComments> likedCommentsService)
+        public IService<LikedComments> _likedCommentsService { get; set; }
+
+        private readonly IImageUploadService _imageUploadService;
+
+        public IService<Image> _imageService { get; set; }
+
+
+        public CommentController(IService<Comment> commentService, IService<Project> projectService, UserManager<User> userManager, IService<LikedComments> likedCommentsService, IImageUploadService imageUploadService, IService<Image> imageService)
         {
             _commentService = commentService;
             _ProjectService = projectService;
             _userManager = userManager;
             _likedCommentsService = likedCommentsService;
+            _imageUploadService = imageUploadService;
+            _imageService = imageService;
         }
 
         [HttpGet("Comment/IsLikedByUser/{commentId}/{userId}")]
@@ -280,6 +289,36 @@ namespace Portfolio.Controllers
             return Json(new { isLiked, likeCount });
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(int projectId, string commentText, IFormFile commentImage)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var comment = new Comment
+            {
+                Text = commentText,
+                ProjectId = projectId,
+                UserId = user.Id,
+                DateAdded = DateTime.Now
+            };
+
+            if (commentImage != null && commentImage.Length > 0)
+            {
+                var imageUrl = await _imageUploadService.UploadImageAsync(commentImage);
+                var image = new Image { Path = imageUrl };
+                _imageService.Add(image);
+                comment.ImageId = image.Id;
+            }
+            comment.Text = "";
+            _commentService.Add(comment);
+            //return RedirectToAction("Project1", new { id = projectId });
+            return RedirectToAction("Project1", "Project", new { id = projectId });
+        }
 
     }
 }

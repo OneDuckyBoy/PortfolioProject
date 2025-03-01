@@ -26,6 +26,24 @@
     <section class="comments">
         <div class="container">
             <h2>Comments</h2>
+            <button class="revealAddCommentSection">Add Comment</button>
+            <section class="addCommentSection" style="display: none;">
+                <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
+                    <input type="hidden" name="projectId" value="@Model.Id" />
+                    <label for="createCommentText">текст на коментара (опционален)</label>
+                    <textarea id="createCommentText" name="commentText" placeholder="Write your comment here..."></textarea>
+                    <label for="createCommentImage">снимка на коментара (опционален)</label>
+                    <input id="createCommentImage" type="file" name="commentImage" accept="image/*">
+                    <button type="submit">Submit Comment</button>
+                    <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
+                </form>
+            </section>
+
+
+
+
+
+
             @if (Model?.Comments != null && Model.Comments.Any())
             {
                 @foreach (var comment in Model.Comments)
@@ -35,10 +53,9 @@
 
                         <div class="comment-content">
                             <p><strong><span class="username">@(comment.User?.UserName ?? "Unknown User")</span></strong> <span class="comment-date">@comment.DateAdded.ToString("dd MMM yyyy")</span></p>
-                            
                             @if (comment.Image != null)
                             {
-                                <img class="comment-image" src="@comment.Image.Path" alt="Comment Image" />
+                                <img style="width:350px" class="comment-image" src="@comment.Image.Path" alt="Comment Image" />
                             }
                             @if (!string.IsNullOrEmpty(comment.Text))
                             {
@@ -72,70 +89,7 @@
 
 <script src="https://kit.fontawesome.com/734a4e4265.js" crossorigin="anonymous"></script>
 <script>
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     document.querySelectorAll(".like-button").forEach(button => {
-    //         button.addEventListener("click", function () {
-    //             const commentId = this.getAttribute("data-comment-id");
-    //             const userId = "@User.FindFirstValue(ClaimTypes.NameIdentifier)"; Get the actual user ID
 
-    //             fetch(`/Comment/LikeComment/${commentId}/${userId}`, {
-    //                 method: "POST"
-    //             }).then(response => response.json())
-    //               .then(data => {
-    //                   if (data.liked) {
-    //                       this.classList.remove("fa-heart-o");
-    //                       this.classList.add("fa-heart");
-    //                   } else {
-    //                       this.classList.remove("fa-heart");
-    //                       this.classList.add("fa-heart-o");
-    //                   }
-    //                   this.previousElementSibling.textContent = data.likeCount;
-    //               });
-    //         });
-    //     });
-    // });
-        /*  document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".like-button").forEach(button => {
-            button.addEventListener("click", function () {
-                let commentId = this.dataset.commentId;
-
-                fetch(`/Comment/ToggleLike/${commentId}`, {
-                    method: "POST",
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                        "X-CSRF-TOKEN": document.querySelector('input[name="__RequestVerificationToken"]').value
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.liked) {
-                        Ако коментарът е харесан
-                        this.querySelector("i").classList.remove("fa-heart-o"); Премахваме празното сърце
-                        this.querySelector("i").classList.add("fa-heart"); Добавяме пълно сърце
-                    } else {
-                        Ако коментарът не е харесан
-                        this.querySelector("i").classList.remove("fa-heart"); Премахваме пълното сърце
-                        this.querySelector("i").classList.add("fa-heart-o"); Добавяме празно сърце
-                    }
-                    this.querySelector(".like-count").textContent = data.likeCount; Обновяваме броя на харесванията
-                })
-                .catch(error => console.error("Error:", error));
-            });
-
-            Проверка дали коментарът е харесан
-            let commentId = button.dataset.commentId;
-            fetch(`/Comment/IsLikedByUser/${commentId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.isLiked) {
-                        button.querySelector("i").classList.remove("fa-heart-o");
-                        button.querySelector("i").classList.add("fa-heart");
-                    }
-                });
-        });
-    });
-
-    */
 
 
    // ------------------ променя сърцето успешно
@@ -174,34 +128,42 @@
         });
     });
 
-    //     document.addEventListener("DOMContentLoaded", function () {
-    //     document.querySelectorAll(".like-button").forEach(button => {
-    //         button.addEventListener("click", function () {
-    //             let commentId = this.getAttribute("data-comment-id");
-    //             let likeCountSpan = this.closest(".comment-actions").querySelector(".like-count");
+    //----------------------------------------------------------------------
+               document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".revealAddCommentSection").addEventListener("click", function () {
+            var addCommentSection = document.querySelector(".addCommentSection");
+            if (addCommentSection.style.display === "none" || addCommentSection.style.display === "") {
+                addCommentSection.style.display = "block";
+            } else {
+                addCommentSection.style.display = "none";
+            }
+        });
 
-    //             fetch(`/Comment/ToggleLike/${commentId}`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     "X-Requested-With": "XMLHttpRequest"
-    //                 }
-    //             })
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 if (data.isLiked) {
-    //                     this.classList.remove("fa-heart-o");
-    //                     this.classList.add("fa-heart"); // Харесано (пълно сърце)
-    //                 } else {
-    //                     this.classList.remove("fa-heart");
-    //                     this.classList.add("fa-heart-o"); // Отхаресано (празно сърце)
-    //                 }
-    //                 likeCountSpan.textContent = data.likeCount; // Обнови брояча
-    //             })
-    //             .catch(error => console.error("Error:", error));
-    //         });
-    //     });
-    // });
+        document.getElementById("addCommentForm").addEventListener("submit", function (event) {
+            var commentText = document.querySelector("textarea[name='commentText']").value.trim();
+            var commentImage = document.querySelector("input[name='commentImage']").files.length;
+            var errorMessage = document.getElementById("errorMessage");
+
+            if (commentText === "" && commentImage === 0) {
+                event.preventDefault();
+                errorMessage.style.display = "block";
+            } else {
+                errorMessage.style.display = "none";
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -329,6 +291,65 @@
         .like-button.fa-heart {
             color: red;
         }
+
+
+        /* ---------------------------- */
+
+    .revealAddCommentSection {
+        padding: 10px 20px;
+        background-color: darkorange;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+        .revealAddCommentSection:hover {
+            background-color: #e69500;
+        }
+
+    .addCommentSection {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f1f1f1;
+        border-radius: 10px;
+    }
+
+        .addCommentSection form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .addCommentSection textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        .addCommentSection input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .addCommentSection button[type="submit"] {
+            align-self: flex-start;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .addCommentSection button[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+
 </style>
 
 

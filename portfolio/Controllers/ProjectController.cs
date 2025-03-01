@@ -152,7 +152,7 @@ namespace Portfolio.Controllers
                 return NotFound("Project not found.");
             }
             project.Category = _categoryService.GetById(project.CategoryId);
-            project.Comments = _commentCategory.GetAll().AsQueryable().Include(c=>c.LikedComments).Include(c=>c.User).Where(c => c.ProjectId == project.Id).ToList();
+            project.Comments = _commentCategory.GetAll().AsQueryable().Include(c=>c.Image).Include(c=>c.LikedComments).Include(c=>c.User).Where(c => c.ProjectId == project.Id).ToList();
             project.Image = _imageService.GetById(project.ImageId);
             var user = _userManager.FindByIdAsync((project.UserId + "")).Result;
             Image userImage = _imageService.GetById(user.ProfilePictureId.Value);
