@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Models.Models;
 using Portfolio.Data;
+using Portfolio.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +60,18 @@ namespace Core.Repositories
             {
                 entry.State = EntityState.Detached;
             }
+        }
+        public void DeleteFromLikedComments(int commentId, int userId)
+        {
+            var commentsQuery = _context.LikedComments.Where(c => c.CommentId == commentId && c.UserId == userId);
+            if (!commentsQuery.ToList().IsNullOrEmpty())
+            {
+                var comment = commentsQuery.ToList()[0];
+
+                _context.LikedComments.Remove(comment);
+                _context.SaveChanges();
+            }
+            
         }
     }
 }

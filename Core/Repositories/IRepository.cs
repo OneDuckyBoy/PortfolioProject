@@ -16,5 +16,6 @@ namespace Core.Repositories
         void Delete(int id);
         bool EntityExists(int id);
         void Detach(T entity);
+        void DeleteFromLikedComments(int commentId, int userId);
     }
 }
