@@ -4,6 +4,7 @@ using Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Portfolio.Controllers
 {
@@ -13,12 +14,13 @@ namespace Portfolio.Controllers
         private readonly IService<Project> _projectService;
         public readonly IService<Image> _imageService;
         public readonly IService<Category> _categoryService;
+        public readonly IService<Comment> _commentCategory;
         public readonly IImageUploadService _ImageUploadService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
 
-        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager, IImageUploadService ImageUploadService)
+        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager,  IImageUploadService ImageUploadService, IService<Comment> commentCategory)
         {
             _projectService = projectService;
             _imageService = imageService;
@@ -26,6 +28,7 @@ namespace Portfolio.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _ImageUploadService = ImageUploadService;
+            _commentCategory = commentCategory;
         }
         public IActionResult Index(ProjectIndexFilterModelView? filter)
         {
@@ -131,16 +134,42 @@ namespace Portfolio.Controllers
         [Route("Project/{id}")]
         public IActionResult Project1(int id)
         {
-            Project project = _projectService.GetById(id);
-            project.Category = _categoryService.GetById(project.CategoryId);
-            project.Image = _imageService.GetById(project.ImageId);
-            var user = _userManager.FindByIdAsync((project.UserId + ""));
-            if (user == null)
+            //Project project = _projectService.GetById(id);
+            //if (project==null)
+            //{
+            //    Console.WriteLine("???");
+            //}
+            User currentUser = _userManager.GetUserAsync(User).Result;
+            ViewBag.currentUser = currentUser;
+            if (id == 0)
             {
-                project.User = new User();
-                project.User.Email = "unknow user";
+                return BadRequest("Invalid project ID.");
             }
-            project.User = user.Result;
+
+            Project project = _projectService.GetById(id);
+            if (project == null)
+            {
+                return NotFound("Project not found.");
+            }
+            project.Category = _categoryService.GetById(project.CategoryId);
+            project.Comments = _commentCategory.GetAll().AsQueryable().Include(c=>c.LikedComments).Include(c=>c.User).Where(c => c.ProjectId == project.Id).ToList();
+            project.Image = _imageService.GetById(project.ImageId);
+            var user = _userManager.FindByIdAsync((project.UserId + "")).Result;
+            Image userImage = _imageService.GetById(user.ProfilePictureId.Value);
+            user.ProfilePicture = userImage;
+            
+            // todo
+            project.User = user;
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool hasLiked = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                int count =project.Comments.Where(c => (c.UserId + "").Equals(currentUserId)).Count();
+                hasLiked = count == 1;
+            }
+            ViewBag.HasLiked = hasLiked;
+
+
             Console.WriteLine();
             return View(project);
         }

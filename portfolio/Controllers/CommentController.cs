@@ -4,26 +4,117 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
 using Portfolio.Models;
+using System.Security.Claims;
 
 namespace Portfolio.Controllers
 {
     public class CommentController : Controller
     {
-        public IService<Comment> _CommentService { get; set; }
+        public IService<Comment> _commentService { get; set; }
+        public IService<LikedComments> _likedCommentsService { get; set; }
         public IService<Project> _ProjectService { get; set; }
+        
         private readonly UserManager<User> _userManager;
 
-        public CommentController(IService<Comment> commentService, IService<Project> projectService, UserManager<User> userManager)
+        public CommentController(IService<Comment> commentService, IService<Project> projectService, UserManager<User> userManager, IService<LikedComments> likedCommentsService)
         {
-            _CommentService = commentService;
+            _commentService = commentService;
             _ProjectService = projectService;
             _userManager = userManager;
+            _likedCommentsService = likedCommentsService;
+        }
+
+        [HttpGet("Comment/IsLikedByUser/{commentId}/{userId}")]
+        public IActionResult IsLikedByUser(int commentId, int userId)
+        {
+            var comment = _commentService.GetById(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var isLiked = comment.LikedComments.Any(lc => lc.UserId == userId);
+            return Json(new { isLiked });
+        }
+
+        [HttpPost("Comment/LikeComment/{commentId}/{username}")]
+        public async Task<IActionResult> LikeComment(int commentId, string username)
+        {
+            var comment = _commentService.GetById(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+            User user = await _userManager.FindByNameAsync(username);
+            //var currUser = await _userManager.GetUserAsync(User);//1;//
+            var userId1 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currUser = await _userManager.FindByIdAsync(userId1);
+
+            int userId = user.Id;
+            var likedComment = comment.LikedComments.FirstOrDefault(lc => lc.UserId == currUser.Id);
+            if (likedComment == null)
+            {
+                comment.LikedComments.Add(new LikedComments { UserId = currUser.Id, CommentId = commentId });
+                Console.WriteLine(  );
+            }
+
+            _commentService.Update(comment);
+
+            var likeCount = comment.LikedComments.Count;
+            var liked = likedComment == null;
+
+            return Json(new { liked, likeCount });
+        }
+
+        [HttpPost("Comment/removeLikeFromComment/{commentId}/{username}")]
+        public async Task<IActionResult> RemoveLikeFromComment(int commentId, string username)
+        {
+            var comment = _commentService.GetById(commentId);
+             
+           // var currUser = _userManager.GetUserAsync(User);//1;//
+            
+            var userId = _userManager.GetUserAsync(User).Result.Id; //_userManager.FindByNameAsync(username).Result.Id;
+            var likedComment = _likedCommentsService.GetAll().AsQueryable().Where(c => c.CommentId == commentId).Where(c => c.UserId == userId).ToArray();
+            var likeCount = comment.LikedComments.Count;
+            if (!likedComment.IsNullOrEmpty())
+            {
+                var allComments = _likedCommentsService.GetAll().ToList();
+                _likedCommentsService.DeleteFromLikedComments(commentId, userId);
+
+
+                //comment.LikedComments.Remove(likedComment[0]);
+
+                Console.WriteLine();
+            }
+            bool asd = !likedComment.IsNullOrEmpty();
+
+            var likedCommentIsGone = _likedCommentsService.GetAll().AsQueryable().Where(c => c.CommentId == commentId).Where(c => c.UserId == userId).ToArray().IsNullOrEmpty();
+
+            Console.WriteLine(likedCommentIsGone);
+            return Json(new { removed = likedComment != null, likeCount });
+        }
+
+
+
+
+        [HttpGet("Comment/GetLikeCount/{commentId}")]
+        public IActionResult GetLikeCount(int commentId)
+        {
+            var comment = _commentService.GetById(commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var likeCount = comment.LikedComments.Count;
+            return Json(new { likeCount });
         }
         public ActionResult Index(CommentIndexFilterView filter)
         {
-            var query = _CommentService.GetAll().AsQueryable();
+            var query = _commentService.GetAll().AsQueryable();
 
             if (filter.ProjectId != null)
             {
@@ -79,7 +170,7 @@ namespace Portfolio.Controllers
                     DateAdded = DateTime.Now
                 };
 
-                _CommentService.Add(comment);
+                _commentService.Add(comment);
                 return RedirectToAction("Index");
             }
 
@@ -90,7 +181,7 @@ namespace Portfolio.Controllers
 
         public IActionResult Edit(int id)
         {
-            var comment = _CommentService.GetById(id);
+            var comment = _commentService.GetById(id);
             if (comment == null)
             {
                 return NotFound();
@@ -118,7 +209,7 @@ namespace Portfolio.Controllers
                     return Unauthorized();
                 }
 
-                var comment = _CommentService.GetById(viewModel.Id);
+                var comment = _commentService.GetById(viewModel.Id);
                 if (comment == null)
                 {
                     return NotFound();
@@ -128,7 +219,7 @@ namespace Portfolio.Controllers
                 comment.ProjectId = viewModel.ProjectId;
                 comment.UserId = user.Id;
 
-                _CommentService.Update(comment);
+                _commentService.Update(comment);
                 return RedirectToAction("Index");
             }
 
@@ -138,7 +229,7 @@ namespace Portfolio.Controllers
         }
         public IActionResult Details(int id)
         {
-            var comment = _CommentService.GetById(id);
+            var comment = _commentService.GetById(id);
             if (comment == null)
             {
                 return NotFound();
@@ -149,5 +240,46 @@ namespace Portfolio.Controllers
 
             return View(comment);
         }
+
+
+        [HttpPost("Comment/ToggleLike/{commentId}")]
+        public async Task<IActionResult> ToggleLike(int commentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            //var comment = _commentService.GetById(commentId);
+            var comment = _commentService.GetAll().FirstOrDefault(c => c.Id == commentId);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var likedComment = comment.LikedComments.FirstOrDefault(lc => lc.UserId == user.Id);
+
+            if (likedComment != null)
+            {
+                // Ако вече е харесан → махаме го (отхаресване)
+                comment.LikedComments.Remove(likedComment);
+            }
+            else
+            {
+                // Ако не е харесан → добавяме харесване
+                comment.LikedComments.Add(new LikedComments { UserId = user.Id, CommentId = commentId });
+            }
+
+            _commentService.Update(comment);
+
+            var likeCount = comment.LikedComments.Count;
+            var isLiked = likedComment == null; // true ако е харесан, false ако е отхаресан
+
+            return Json(new { isLiked, likeCount });
+        }
+
+
     }
 }
