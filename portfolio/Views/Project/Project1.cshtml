@@ -2,9 +2,12 @@
 @using System.Security.Claims
 @{
     ViewData["Title"] = Model?.Title ?? "Project Details";
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var loginUrl = Url.Page("/Account/Login", new { area = "Identity", returnUrl = ViewContext.HttpContext.Request.Path });
+   
 }
 
-<main>
+<main id="currmain"  class="@(isAuthenticated ? "authenticated" : "")">
     <header class="hero">
         <div class="hero-image-container">
             <img class="hero-image" src="@Model.Image.Path" alt="@Model.Title">
@@ -70,8 +73,19 @@
                             </div> *@
                             <div class="comment-actions">
                                 <span class="like-count">@comment.LikedComments.Count</span>
-                                <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
-                                   data-comment-id="@comment.Id"></i>
+
+                                @* <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
+                                   data-comment-id="@comment.Id"></i> *@
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
+                                       data-comment-id="@comment.Id"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-heart-o like-button" data-comment-id="@comment.Id"></i>
+                                }
+
                             </div>
 
                         </div>
@@ -104,7 +118,14 @@
 
                  console.log(commentId);
                   console.log(username);
-
+                   let main = document.getElementById("currmain");
+                    if (!main.classList.contains("authenticated")) {
+                 // Пренасочване към страницата за вход
+                  let loginUrl = document.getElementById("login");
+                 window.location.href = loginUrl;
+                 console.log("not logged in");
+                 return;
+             }
                 if (this.classList.contains("fa-heart-o")) {
 
 
@@ -129,7 +150,7 @@
     });
 
     //----------------------------------------------------------------------
-               document.addEventListener("DOMContentLoaded", function () {
+              document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".revealAddCommentSection").addEventListener("click", function () {
             var addCommentSection = document.querySelector(".addCommentSection");
             if (addCommentSection.style.display === "none" || addCommentSection.style.display === "") {
@@ -152,6 +173,15 @@
             }
         });
     });
+
+
+    
+  
+
+    
+
+
+
 
 
 

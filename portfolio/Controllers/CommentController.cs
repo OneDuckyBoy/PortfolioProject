@@ -1,4 +1,5 @@
 ﻿using Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,7 @@ namespace Portfolio.Controllers
             var isLiked = comment.LikedComments.Any(lc => lc.UserId == userId);
             return Json(new { isLiked });
         }
-
+        [Authorize]
         [HttpPost("Comment/LikeComment/{commentId}/{username}")]
         public async Task<IActionResult> LikeComment(int commentId, string username)
         {
@@ -77,7 +78,7 @@ namespace Portfolio.Controllers
 
             return Json(new { liked, likeCount });
         }
-
+        [Authorize]
         [HttpPost("Comment/removeLikeFromComment/{commentId}/{username}")]
         public async Task<IActionResult> RemoveLikeFromComment(int commentId, string username)
         {

@@ -131,16 +131,27 @@ namespace Portfolio.Controllers
             Console.WriteLine();
             return View(project);
         }
-        [Route("Project/{id}")]
-        public IActionResult Project1(int id)
+        [Route("Project2/{id}")]
+        public IActionResult Project2(int id)
         {
             //Project project = _projectService.GetById(id);
             //if (project==null)
             //{
             //    Console.WriteLine("???");
             //}
-            User currentUser = _userManager.GetUserAsync(User).Result;
-            ViewBag.currentUser = currentUser;
+            User currentUser;
+
+            if (User.Identity.IsAuthenticated)
+            {
+                // Потребителят е логнат
+                currentUser = _userManager.GetUserAsync(User).Result;
+                
+            }
+            else
+            {
+                int defaultUserId = 1006;
+                currentUser = _userManager.FindByIdAsync(defaultUserId.ToString()).Result;
+            }
             if (id == 0)
             {
                 return BadRequest("Invalid project ID.");
@@ -151,6 +162,7 @@ namespace Portfolio.Controllers
             {
                 return NotFound("Project not found.");
             }
+
             project.Category = _categoryService.GetById(project.CategoryId);
             project.Comments = _commentCategory.GetAll().AsQueryable().Include(c=>c.Image).Include(c=>c.LikedComments).Include(c=>c.User).Where(c => c.ProjectId == project.Id).ToList();
             project.Image = _imageService.GetById(project.ImageId);
@@ -167,12 +179,72 @@ namespace Portfolio.Controllers
                 int count =project.Comments.Where(c => (c.UserId + "").Equals(currentUserId)).Count();
                 hasLiked = count == 1;
             }
-            ViewBag.HasLiked = hasLiked;
 
 
             Console.WriteLine();
             return View(project);
         }
+
+
+
+        [Route("Project/{id}")]
+        public IActionResult Project1(int id)
+        {
+            User currentUser;
+
+            if (User.Identity.IsAuthenticated)
+            {
+                // Потребителят е логнат
+                currentUser = _userManager.GetUserAsync(User).Result;
+            }
+            else
+            {
+                int defaultUserId = 1006;
+                currentUser = _userManager.FindByIdAsync(defaultUserId.ToString()).Result;
+                if (currentUser == null)
+                {
+                    return NotFound("Default user not found.");
+                }
+            }
+            ViewBag.currentUser = currentUser;
+
+            if (id == 0)
+            {
+                return BadRequest("Invalid project ID.");
+            }
+
+            Project project = _projectService.GetById(id);
+            if (project == null)
+            {
+                return NotFound("Project not found.");
+            }
+
+            project.Category = _categoryService.GetById(project.CategoryId);
+            project.Comments = _commentCategory.GetAll().AsQueryable().Include(c => c.Image).Include(c => c.User).Where(c => c.ProjectId == project.Id).Include(c => c.LikedComments).ThenInclude(l=>l.User).ToList();
+            project.Image = _imageService.GetById(project.ImageId);
+            var user = _userManager.FindByIdAsync((project.UserId + "")).Result;
+            if (user != null && user.ProfilePictureId.HasValue)
+            {
+                Image userImage = _imageService.GetById(user.ProfilePictureId.Value);
+                user.ProfilePicture = userImage;
+            }
+            project.User = user;
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool hasLiked = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                int count = project.Comments.Where(c => (c.UserId + "").Equals(currentUserId)).Count();
+                hasLiked = count == 1;
+            }
+            ViewBag.HasLiked = hasLiked;
+
+            return View(project);
+        }
+
+
+
+
 
         public IActionResult Edit(int id)
         {
