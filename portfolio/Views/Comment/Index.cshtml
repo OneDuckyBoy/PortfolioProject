@@ -19,12 +19,14 @@
     <button type="submit">Filter</button>
 </form>
 
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>Project</th>
             <th>User</th>
             <th>Content</th>
+            <th>image</th>
+            <th>действия</th>
         </tr>
     </thead>
     <tbody>
@@ -34,7 +36,32 @@
                 <td>@comment.Project.Title</td>
                 <td>@comment.User.UserName</td>
                 <td>@comment.Text</td>
+                <td>
+                    
+                    @if (@comment.Image!=null)
+                    {
+                        <img class="comment-image" style="width=50px" src="@comment.Image.Path"  />
+                    }
+                    else
+                    {
+
+                        <p>no picture</p>
+                    }
+
+                    </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@comment.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@comment.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+<style>
+    .comment-image{
+        width: 50px;
+        height: 50px;
+    }
+</style>

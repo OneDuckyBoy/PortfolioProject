@@ -124,7 +124,7 @@ namespace Portfolio.Controllers
         }
         public ActionResult Index(CommentIndexFilterView filter)
         {
-            var query = _commentService.GetAll().AsQueryable();
+            var query = _commentService.GetAll().AsQueryable().Include(c=>c.Image).AsQueryable();
 
             if (filter.ProjectId != null)
             {
