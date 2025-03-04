@@ -70,7 +70,7 @@ namespace Portfolio.Controllers
             ViewData["message from controller"] = "Hello from the backend : )";
             return View(model);
         }
-
+        [Route("Project/Create")]
         public IActionResult Create()
         {
             var categories = _categoryService.GetAll();
@@ -82,12 +82,13 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
+        [Route("Project/Create")]
         public IActionResult Create(ProjectCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
 
-                var user =  _userManager.GetUserAsync(User);
+                var user = _userManager.GetUserAsync(User);
                 if (user.Result == null)
                 {
                     return Unauthorized();
@@ -100,11 +101,10 @@ namespace Portfolio.Controllers
                     CategoryId = viewModel.CategoryId
                 };
 
-                
+
                 Image image = new Image();
                 image.Path = _ImageUploadService.UploadImageAsync(viewModel.Image).Result;
                 project.Image = _imageService.Add(image);
-                project.Category = _categoryService.GetById(project.CategoryId);
                 project.Category = _categoryService.GetById(project.CategoryId);
                 project.User = user.Result;
                 _projectService.Add(project);
