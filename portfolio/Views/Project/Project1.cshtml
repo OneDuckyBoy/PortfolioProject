@@ -7,7 +7,6 @@
    
 }
 
-<main id="currmain"  class="@(isAuthenticated ? "authenticated" : "")">
     <header class="hero">
         <div class="hero-image-container">
             <img class="hero-image" src="@Model.Image.Path" alt="@Model.Title">
@@ -22,7 +21,7 @@
     <section class="project-details">
         <div class="container">
             <h2>Project Details</h2>
-            <p>@Model.Description</p>
+            <p>@Html.Raw(@Model.Description)</p>
         </div>
     </section>
     <div class="divider"></div>
@@ -62,7 +61,16 @@
                             }
                             @if (!string.IsNullOrEmpty(comment.Text))
                             {
-                                <p>@comment.Text</p>
+                                @* <p>@comment.Text</p>
+                                <br />
+
+                                <br />
+
+                                <br /> *@
+
+                                <!-- Временно добавете това, за да видите съдържанието -->
+                                <p>comment.Text</p> <!-- Това трябва да рендерира HTML -->
+
                             }
                            @*  <div class="comment-actions">
                                 <span class="like-count">@comment.LikedComments.Count</span>
