@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Portfolio.Models;
 using System.Diagnostics.Contracts;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Portfolio.Controllers
 {
@@ -294,6 +295,7 @@ namespace Portfolio.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int projectId, string commentText, IFormFile commentImage)
         {
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -315,11 +317,101 @@ namespace Portfolio.Controllers
                 _imageService.Add(image);
                 comment.ImageId = image.Id;
             }
-            comment.Text = "";
+            if (comment.Text.IsNullOrEmpty())
+            {
+                comment.Text = "";
+            }
+            else
+            {
+                comment.Text= comment.Text.Trim();
+                comment.Text = Regex.Replace(comment.Text, @"(\r?\n)+$", "");
+            }
             _commentService.Add(comment);
             //return RedirectToAction("Project1", new { id = projectId });
             return RedirectToAction("Project1", "Project", new { id = projectId });
         }
+
+
+
+
+        [Authorize]
+        [HttpPost("Comment/Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var comment = _commentService.GetById(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isOwner = comment.UserId == user.Id;
+            if (!isAdmin && !isOwner)
+            {
+                return Forbid();
+            }
+
+            _commentService.Delete(id);
+
+            // For AJAX requests, return a JSON response
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true });
+            }
+
+            // For non-AJAX requests, redirect as before
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+            return RedirectToAction("Index");
+        }
+
+        /*
+
+        [Authorize]
+        [HttpPost("Comment/Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var comment = _commentService.GetById(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isOwner = comment.UserId == user.Id;
+
+            if (!isAdmin && !isOwner)
+            {
+                return Forbid();
+            }
+
+            _commentService.Delete(id);
+
+            // Redirect to the previous page
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+
+            return RedirectToAction("Index");
+        }
+        */
 
     }
 }
