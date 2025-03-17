@@ -9,9 +9,9 @@
     ViewData["Title"] = Model?.Title ?? "Project Details";
     var isAuthenticated = User.Identity.IsAuthenticated;
     var loginUrl = Url.Page("/Account/Login", new { area = "Identity", returnUrl = ViewContext.HttpContext.Request.Path });
-   
-}
 
+}
+<main id="currmain" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")">
     <header class="hero">
         <div class="hero-image-container">
             <img class="hero-image" src="@Model.Image.Path" alt="@Model.Title">
@@ -35,7 +35,7 @@
             <h2>Comments</h2>
             <button class="revealAddCommentSection">Add Comment</button>
             <section class="addCommentSection" style="display: none;">
-               @*  <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
+                @*  <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
                     <input type="hidden" name="projectId" value="@Model.Id" />
                     <label for="createCommentText">текст на коментара (опционален)</label>
                     <textarea id="createCommentText" name="commentText" placeholder="Write your comment here..."></textarea>
@@ -44,19 +44,19 @@
                     <button type="submit">Submit Comment</button>
                     <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
                 </form> *@
-            <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
-                <input type="hidden" name="projectId" value="@Model.Id" />
+                <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
+                    <input type="hidden" name="projectId" value="@Model.Id" />
 
-                <label for="editorComment">Текст на коментара (опционален)</label>
-                <div id="editorComment" class="form-control"></div>
-                <input type="hidden" id="createCommentText" name="commentText">
+                    <label for="editorComment">Текст на коментара (опционален)</label>
+                    <div id="editorComment" class="form-control"></div>
+                    <input type="hidden" id="createCommentText" name="commentText">
 
-                <label for="createCommentImage">Снимка на коментара (опционален)</label>
-                <input id="createCommentImage" type="file" name="commentImage" accept="image/*">
+                    <label for="createCommentImage">Снимка на коментара (опционален)</label>
+                    <input id="createCommentImage" type="file" name="commentImage" accept="image/*">
 
-                <button type="submit">Submit Comment</button>
-                <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
-            </form>
+                    <button type="submit">Submit Comment</button>
+                    <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
+                </form>
 
             </section>
 
@@ -71,38 +71,56 @@
                 {
                     <div class="comment" data-comment-id="@comment.Id">
                         <img class="profile-picture" src="@(comment.User?.ProfilePicture?.Path ?? "default-profile-picture.jpg")" alt="Profile Picture" />
-
                         <div class="comment-content">
-                            <p><strong><span class="username">@(comment.User?.UserName ?? "Unknown User")</span></strong> <span class="comment-date">@comment.DateAdded.ToString("dd MMM yyyy")</span></p>
-                            @if (comment.Image != null)
-                            {
-                                <img style="width:350px" class="comment-image" src="@comment.Image.Path" alt="Comment Image" />
-                            }
-                            @if (!string.IsNullOrEmpty(comment.Text))
-                            {
-                                @* <p>@comment.Text</p>
-                                <br />
+                            <div class="comment-header">
+                                <p><strong><span class="username">@(comment.User?.UserName ?? "Unknown User")</span></strong> <span class="comment-date">@comment.DateAdded.ToString("dd MMM yyyy")</span></p>
 
-                                <br />
+                                @if (User.IsInRole("Admin") || (comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                {
+                                    <div class="dropdown comment-menu">
+                                        <button class="btn dropdown-toggle" type="button" id="dropdownMenu@(comment.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu@(comment.Id)">
+                                            <li><button class="dropdown-item edit-comment-btn" data-comment-id="@comment.Id">Edit</button></li>
+                                            <li><button class="dropdown-item delete-comment-btn" data-comment-id="@comment.Id">Delete</button></li>
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
 
-                                <br /> *@
+                            <div class="comment-body" id="comment-body-@comment.Id">
+                                @if (comment.Image != null)
+                                {
+                                    <img style="width:350px" class="comment-image" src="@comment.Image.Path" alt="Comment Image" id="comment-image-@comment.Id" />
+                                }
+                                @if (!string.IsNullOrEmpty(comment.Text))
+                                {
+                                    <p id="comment-text-@comment.Id">@Html.Raw(comment.Text)</p>
+                                }
+                            </div>
 
-                                <!-- Временно добавете това, за да видите съдържанието -->
-                            <p> @Html.Raw(comment.Text)</p> <!-- Това трябва да рендерира HTML -->
+                            <div class="edit-form-container" id="edit-form-@comment.Id" style="display: none;">
+                                <form id="edit-comment-form-@comment.Id" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <textarea class="form-control" id="edit-text-@comment.Id" name="commentText">@comment.Text</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="edit-image-@comment.Id" class="form-label">Change Image (optional)</label>
+                                        <input type="file" class="form-control" id="edit-image-@comment.Id" name="commentImage" accept="image/*">
+                                        @if (comment.Image != null)
+                                        {
+                                            <div class="form-text">Leave empty to keep current image</div>
+                                        }
+                                    </div>
+                                    <input type="hidden" name="commentId" value="@comment.Id">
+                                    <button type="button" class="btn btn-primary save-edit-btn" data-comment-id="@comment.Id">Save</button>
+                                    <button type="button" class="btn btn-secondary cancel-edit-btn" data-comment-id="@comment.Id">Cancel</button>
+                                </form>
+                            </div>
 
-                            }
-                           @*  <div class="comment-actions">
-                                <span class="like-count">@comment.LikedComments.Count</span>
-                                <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o")
-                               like-button"
-                                   data-comment-id="@comment.Id">
-                                </i>
-                            </div> *@
                             <div class="comment-actions">
                                 <span class="like-count">@comment.LikedComments.Count</span>
-
-                                @* <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
-                                   data-comment-id="@comment.Id"></i> *@
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
@@ -112,9 +130,7 @@
                                 {
                                     <i class="fa fa-heart-o like-button" data-comment-id="@comment.Id"></i>
                                 }
-
                             </div>
-
                         </div>
                     </div>
                 }
@@ -146,6 +162,7 @@
                  console.log(commentId);
                   console.log(username);
                    let main = document.getElementById("currmain");
+                    console.log(main)
                     if (!main.classList.contains("authenticated")) {
                  // Пренасочване към страницата за вход
                   let loginUrl = document.getElementById("login");
@@ -159,18 +176,21 @@
                   fetch(`/Comment/LikeComment/${commentId}/${username}`, {
                      method: "POST"
                  })
-
+                   console.log("liked start");
                     this.classList.remove("fa-heart-o");
                     this.classList.add("fa-heart");// Пълно сърце
                     likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;// Увеличаване на брояча
+                      console.log("liked end");
                 }
                    else if (this.classList.contains("fa-heart")){
                       fetch(`/Comment/removeLikeFromComment/${commentId}/${username}`, {
                       method: "POST"
                   })
+                    console.log("disliked start");
                     this.classList.remove("fa-heart");
                     this.classList.add("fa-heart-o");// Празно сърце
                     likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1; //Намаляване на брояча
+                      console.log("disliked end");
                 }
             });
         });
@@ -200,6 +220,29 @@
             }
         });
     });
+
+
+    
+  
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </script>
@@ -418,5 +461,234 @@
     #editorComment {
         height: 200px;
         background-color: #fdfbf3;
+    }
+</style>
+
+@* asd *@
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete comment functionality
+        document.querySelectorAll('.delete-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+
+                if (confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+                    deleteComment(commentId);
+                }
+            });
+        });
+
+        function deleteComment(commentId) {
+            fetch(`/Comment/Delete/${commentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the comment from the DOM or reload the page
+                    const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
+                    if (commentElement) {
+                        commentElement.remove();
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    alert('Failed to delete the comment. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the comment.');
+            });
+        }
+
+        // Edit comment functionality
+        document.querySelectorAll('.edit-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                showEditForm(commentId);
+            });
+        });
+
+        document.querySelectorAll('.cancel-edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                hideEditForm(commentId);
+            });
+        });
+
+        document.querySelectorAll('.save-edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                saveCommentEdit(commentId);
+            });
+        });
+
+        function showEditForm(commentId) {
+            // Hide the comment body and show the edit form
+            document.getElementById(`comment-body-${commentId}`).style.display = 'none';
+            document.getElementById(`edit-form-${commentId}`).style.display = 'block';
+        }
+
+        function hideEditForm(commentId) {
+            // Show the comment body and hide the edit form
+            document.getElementById(`comment-body-${commentId}`).style.display = 'block';
+            document.getElementById(`edit-form-${commentId}`).style.display = 'none';
+        }
+
+        function saveCommentEdit(commentId) {
+            const formData = new FormData();
+            formData.append('id', commentId);
+            console.log(document.getElementById(`edit-text-${commentId}`))
+            formData.append('commentText', document.getElementById(`edit-text-${commentId}`).value);
+
+            const imageInput = document.getElementById(`edit-image-${commentId}`);
+            if (imageInput.files.length > 0) {
+                formData.append('commentImage', imageInput.files[0]);
+            }
+
+            fetch('/Comment/Edit', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update the comment content without reloading the page
+                    if (data.text) {
+                        const textElement = document.getElementById(`comment-text-${commentId}`);
+                        if (textElement) {
+                            textElement.innerText  = data.text;
+                        } else if (data.text.trim() !== '') {
+                            // Create text element if it didn't exist before
+                            const commentBody = document.getElementById(`comment-body-${commentId}`);
+                            const newTextElement = document.createElement('p');
+                            newTextElement.id = `comment-text-${commentId}`;
+                            newTextElement.innerText  = data.text;
+                            commentBody.appendChild(newTextElement);
+                        }
+                    }
+
+                    if (data.imagePath) {
+                        const imageElement = document.getElementById(`comment-image-${commentId}`);
+                        if (imageElement) {
+                            imageElement.src = data.imagePath;
+                        } else {
+                            // Create image element if it didn't exist before
+                            const commentBody = document.getElementById(`comment-body-${commentId}`);
+                            const newImageElement = document.createElement('img');
+                            newImageElement.style.width = '350px';
+                            newImageElement.className = 'comment-image';
+                            newImageElement.id = `comment-image-${commentId}`;
+                            newImageElement.src = data.imagePath;
+                            newImageElement.alt = 'Comment Image';
+                            commentBody.insertBefore(newImageElement, commentBody.firstChild);
+                        }
+                    }
+
+                    // Hide the edit form
+                    hideEditForm(commentId);
+                } else {
+                    alert('Failed to update the comment: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the comment.');
+            });
+        }
+    });
+
+
+
+
+</script>
+<style>
+    /* Add these styles to your CSS file */
+    .comment {
+        display: flex;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .profile-picture {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        object-fit: cover;
+    }
+
+    .comment-content {
+        flex: 1;
+        background-color: #f5f5f5;
+        border-radius: 12px;
+        padding: 12px;
+        position: relative;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .comment-menu {
+        position: relative;
+    }
+
+        .comment-menu .btn {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        .comment-menu .fa-ellipsis-v {
+            font-size: 18px;
+            color: #666;
+        }
+
+    .comment-date {
+        color: #666;
+        font-size: 0.85em;
+        margin-left: 8px;
+    }
+
+    .comment-actions {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .like-button {
+        cursor: pointer;
+        margin-left: 5px;
+        color: #ff4d4d;
+    }
+
+    .like-count {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .edit-form-container {
+        margin-top: 10px;
+    }
+
+    .comment-image {
+        margin-bottom: 10px;
+        border-radius: 8px;
     }
 </style>

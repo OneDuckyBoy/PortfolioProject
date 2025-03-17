@@ -332,7 +332,71 @@ namespace Portfolio.Controllers
         }
 
 
+        [Authorize]
+        [HttpPost]
+        [Route("Comment/Edit")]
+        public async Task<IActionResult> Edit(int id, string commentText, IFormFile commentImage)
+        {
+            var comment = _commentService.GetById(id);
+            if (comment == null)
+            {
+                return Json(new { success = false, message = "Comment not found" });
+            }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isOwner = comment.UserId == user.Id;
+            if (!isAdmin && !isOwner)
+            {
+                return Json(new { success = false, message = "Not authorized" });
+            }
+
+            // Update comment text
+            if (commentText != null)
+            {
+                comment.Text = commentText.Trim();
+                comment.Text = Regex.Replace(comment.Text, @"(\r?\n)+$", "");
+            }
+
+            // Update image if a new one is provided
+            if (commentImage != null && commentImage.Length > 0)
+            {
+                var imageUrl = await _imageUploadService.UploadImageAsync(commentImage);
+
+                // If the comment already has an image, update it
+                if (comment.ImageId.HasValue)
+                {
+                    var existingImage = _imageService.GetById(comment.ImageId.Value);
+                    if (existingImage != null)
+                    {
+                        existingImage.Path = imageUrl;
+                        _imageService.Update(existingImage);
+                    }
+                }
+                else
+                {
+                    // Create new image
+                    var image = new Image { Path = imageUrl };
+                    _imageService.Add(image);
+                    comment.ImageId = image.Id;
+                }
+            }
+
+            _commentService.Update(comment);
+
+            return Json(new
+            {
+                success = true,
+                text = comment.Text,
+                imagePath = comment.Image?.Path,
+                commentId = comment.Id
+            });
+        }
 
         [Authorize]
         [HttpPost("Comment/Delete/{id}")]
