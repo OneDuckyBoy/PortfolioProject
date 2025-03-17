@@ -1,5 +1,10 @@
 ﻿@model Portfolio.Models.Project
 @using System.Security.Claims
+
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+
 @{
     ViewData["Title"] = Model?.Title ?? "Project Details";
     var isAuthenticated = User.Identity.IsAuthenticated;
@@ -30,7 +35,7 @@
             <h2>Comments</h2>
             <button class="revealAddCommentSection">Add Comment</button>
             <section class="addCommentSection" style="display: none;">
-                <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
+               @*  <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
                     <input type="hidden" name="projectId" value="@Model.Id" />
                     <label for="createCommentText">текст на коментара (опционален)</label>
                     <textarea id="createCommentText" name="commentText" placeholder="Write your comment here..."></textarea>
@@ -38,7 +43,21 @@
                     <input id="createCommentImage" type="file" name="commentImage" accept="image/*">
                     <button type="submit">Submit Comment</button>
                     <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
-                </form>
+                </form> *@
+            <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
+                <input type="hidden" name="projectId" value="@Model.Id" />
+
+                <label for="editorComment">Текст на коментара (опционален)</label>
+                <div id="editorComment" class="form-control"></div>
+                <input type="hidden" id="createCommentText" name="commentText">
+
+                <label for="createCommentImage">Снимка на коментара (опционален)</label>
+                <input id="createCommentImage" type="file" name="commentImage" accept="image/*">
+
+                <button type="submit">Submit Comment</button>
+                <p id="errorMessage" style="color: red; display: none;">Моля, въведете текст или качете снимка.</p>
+            </form>
+
             </section>
 
 
@@ -69,7 +88,7 @@
                                 <br /> *@
 
                                 <!-- Временно добавете това, за да видите съдържанието -->
-                                <p>comment.Text</p> <!-- Това трябва да рендерира HTML -->
+                            <p> @Html.Raw(comment.Text)</p> <!-- Това трябва да рендерира HTML -->
 
                             }
                            @*  <div class="comment-actions">
@@ -102,7 +121,7 @@
             }
             else
             {
-                <p>No comments available.</p>
+                <p>No comments available. Be teh first one to comment : )</p>
             }
         </div>
     </section>
@@ -181,29 +200,6 @@
             }
         });
     });
-
-
-    
-  
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </script>
@@ -393,3 +389,34 @@
 
 
 
+@* <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script> *@
+
+<script>
+    var quillComment = new Quill('#editorComment', {
+        theme: 'snow'
+    });
+
+    // Синхронизира Quill редактора със скритото поле
+    quillComment.on('text-change', function () {
+        document.querySelector('#createCommentText').value = quillComment.root.innerHTML;
+    });
+
+    document.querySelector('#addCommentForm').onsubmit = function (event) {
+        var commentText = document.querySelector('#createCommentText').value.trim();
+        var commentImage = document.querySelector('#createCommentImage').files.length > 0;
+
+        // Ако няма текст и няма изображение, спираме изпращането
+        if (!commentText && !commentImage) {
+            document.querySelector('#errorMessage').style.display = 'block';
+            event.preventDefault();
+        }
+    };
+</script>
+
+<style>
+    #editorComment {
+        height: 200px;
+        background-color: #fdfbf3;
+    }
+</style>
