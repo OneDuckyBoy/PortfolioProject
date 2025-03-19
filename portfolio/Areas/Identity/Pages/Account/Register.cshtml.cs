@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,13 +31,15 @@ namespace Portfolio.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IImageUploadService _imageUploadService;
 
         public RegisterModel(
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IImageUploadService imageUploadService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +47,7 @@ namespace Portfolio.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _imageUploadService = imageUploadService;
         }
 
         /// <summary>
@@ -115,6 +119,12 @@ namespace Portfolio.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
+                
+                string defaultProfPictureUrl = "https://api.dicebear.com/8.x/thumbs/svg?seed="+ Input.Email + "&flip=false&rotation=0&scale=90&radius=0&backgroundColor=ffcc00,ff6600,00cc99,3366ff,9900cc&backgroundType=solid,gradientLinear";
+                Image profilePicture = new Image();
+                profilePicture.Path = defaultProfPictureUrl;
+                user.ProfilePicture = profilePicture;
+                
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
