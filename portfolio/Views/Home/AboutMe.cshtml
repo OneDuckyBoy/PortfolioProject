@@ -1,0 +1,722 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+//снимка(hero image) ще сложа след малко, но я имай в предвид като го правиш сайта
+Здравейте, 
+Казвам се Стилиян и ми е приятно да се запознаем :)
+за мен:
+Аз съм full stack developer и се развивам във сферата на Web Development и Изкуствения Интелект, като втори интерес
+в момента се обучвам в ППМГ "Никола Обрешков", град Казанлък
+
+Завършил съм Софтуни Full stack Development With Java
+
+Обичам да слушам музика и да се занимавам с фотография и електроника, както можете да видите в сайта ми : )
+
+умения: аз мога да програмирам спокойно на Java, C# и Python, за разработка и използване на Изкуствен Интелект.
+Имам добри умения и с JavaScript, HTML и CSS
+В момента разучавам Multi agent systems - система от Изкуствени модели, като свеки от тях се е специализирал в определена задача.
+По този начин резултатите за много по качествени и може да се използват различни ИИ за различни задачи, 
+защото различните ИИ имат различни силни и слаби страни. по този начин може да се  използват заедно и да компенсират за слабостите си 
+и да подчертават силните си страни и да направят резултат, който не би бил възможен по стандартните Искуствени модели както е сега
+
+контакти:
+телефон и имейл
+*@
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>За мен - Стилиян</title>
+    <style>
+        /* CSS styles */
+        :root {
+            --primary-color: #ff7b00;
+            --secondary-color: #ff9e40;
+            --dark-color: #333333;
+            --light-color: #f8f8f8;
+            --accent-color: #ff5722;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* .hero-image { */
+        /*     position: absolute; */
+        /*     top: 0; */
+        /*     left: 0; */
+        /*     width: 100%; */
+        /*     height: 100%; */
+        /*     object-fit: cover; */
+        /*     z-index: -1; */
+        /*     opacity: 0.8; */
+        /* } */
+
+        .hero-image {
+            border-radius:20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 123, 0, 0.9), rgba(255, 87, 34, 0.7));
+            z-index: -1;
+        }
+
+        .hero-content {
+            color: white;
+            max-width: 600px;
+            z-index: 1;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+            .hero-content h1 {
+                font-size: 3rem;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-content p {
+                font-size: 1.2rem;
+                margin-bottom: 30px;
+            }
+
+        /* Section Styles */
+        section {
+            padding: 80px 0;
+        }
+
+            section:nth-child(even) {
+                background-color: white;
+            }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-color);
+            position: relative;
+        }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: -15px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background-color: var(--accent-color);
+            }
+
+        /* About Section */
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+            .about-text p {
+                margin-bottom: 20px;
+                font-size: 1.1rem;
+            }
+
+        .profile-img {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Skills Section */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .skill-category {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s;
+        }
+
+            .skill-category:hover {
+                transform: translateY(-10px);
+            }
+
+            .skill-category h3 {
+                color: var(--primary-color);
+                margin-bottom: 15px;
+                text-align: center;
+                font-size: 1.5rem;
+            }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill-tag {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        /* Interests Section */
+        .interests-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .interest-item {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+            .interest-item:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            }
+
+        .interest-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        /* Contact Section */
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .contact-form {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-family: inherit;
+                font-size: 1rem;
+            }
+
+            .form-group textarea {
+                min-height: 120px;
+                resize: vertical;
+            }
+
+        #sendBtn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        #sendBtn:hover {
+                background-color: var(--accent-color);
+            }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            color: white;
+            transition: color 0.3s;
+        }
+
+            .social-icon:hover {
+                color: var(--primary-color);
+            }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            border: none;
+        }
+
+        /* Dark Theme */
+        body.dark-theme {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+            body.dark-theme section:nth-child(even) {
+                background-color: #1e1e1e;
+            }
+
+            body.dark-theme .skill-category,
+            body.dark-theme .interest-item,
+            body.dark-theme .contact-form,
+            body.dark-theme .contact-item {
+                background-color: #2d2d2d;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            body.dark-theme .form-group input,
+            body.dark-theme .form-group textarea {
+                background-color: #3d3d3d;
+                border-color: #555;
+                color: #e0e0e0;
+            }
+
+        /* media (max-width: 768px) { */
+        /*     .hero-content h1 */
+
+        /* { */
+        /*     font-size: 2.5rem; */
+        /* } */
+
+        /* .section-title { */
+        /*     font-size: 2rem; */
+        /* } */
+
+        /* .about-content { */
+        /*     flex-direction: column; */
+        /*     text-align: center; */
+        /* } */
+
+        /* .contact-container { */
+        /*     flex-direction: column; */
+        /* } */
+
+        /* } */
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+
+        <img src="https://res.cloudinary.com/dgh3d67mh/image/upload/v1739752212/gs4a3h5r7yz7hzzvt2fz.jpg" alt="Hero Image" class="hero-image" id="heroImage">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Стилиян</h1>
+                <p>Full Stack Developer, с интерес към Web Development и Изкуствен Интелект</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">За мен</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Здравейте, казвам се Стилиян и ми е приятно да се запознаем :)</p>
+                    <p>Аз съм full stack developer и се развивам във сферата на Web Development и Изкуствения Интелект, като втори интерес.</p>
+                    <p>В момента се обучвам в ППМГ "Никола Обрешков", град Казанлък.</p>
+                    <p>Завършил съм Софтуни Full stack Development With Java.</p>
+                    <p>Обичам да слушам музика и да се занимавам с фотография и електроника, както можете да видите в сайта ми :)</p>
+                </div>
+                <img src="https://res.cloudinary.com/dgh3d67mh/image/upload/v1742303034/iibnkyxsoam4rafgfea2.jpg" alt="Профилна снимка" class="profile-img" id="profileImg">
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-title">Умения</h2>
+            <div class="skills-container">
+                <div class="skill-category">
+                    <h3>Програмни езици</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Java</span>
+                        <span class="skill-tag">C#</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">HTML</span>
+                        <span class="skill-tag">CSS</span>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>Изкуствен Интелект</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Multi Agent Systems</span>
+                        <span class="skill-tag">ИИ Разработка</span>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>Web Development</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Front-end</span>
+                        <span class="skill-tag">Back-end</span>
+                        <span class="skill-tag">Full Stack</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Projects Section -->
+    <section id="projects">
+        <div class="container">
+            <h2 class="section-title">Текущи проекти</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>В момента разучавам Multi agent systems - система от Изкуствени модели, като свеки от тях се е специализирал в определена задача.</p>
+                    <p>По този начин резултатите са много по-качествени и може да се използват различни ИИ за различни задачи, защото различните ИИ имат различни силни и слаби страни.</p>
+                    <p>По този начин може да се използват заедно и да компенсират за слабостите си и да подчертават силните си страни и да направят резултат, който не би бил възможен по стандартните Искуствени модели както е сега.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interests Section -->
+    <section id="interests">
+        <div class="container">
+            <h2 class="section-title">Интереси</h2>
+            <div class="interests-container">
+                <div class="interest-item">
+                    <div class="interest-icon">🎵</div>
+                    <h3>Музика</h3>
+                    <p>Обичам да слушам различни музикални жанрове и да откривам нови изпълнители.</p>
+                </div>
+                <div class="interest-item">
+                    <div class="interest-icon">📸</div>
+                    <h3>Фотография</h3>
+                    <p>Заснемане на интересни моменти и експериментиране с различни стилове и техники.</p>
+                </div>
+                <div class="interest-item">
+                    <div class="interest-icon">⚡</div>
+                    <h3>Електроника</h3>
+                    <p>Работа по различни електронни проекти и устройства.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Контакти</h2>
+            <div class="contact-container">
+                <div class="contact-form">
+                    <h3>Изпратете ми съобщение</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Име</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Имейл</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Съобщение</label>
+                            <textarea id="message" required></textarea>
+                        </div>
+                        <button type="submit" id="sendBtn" class="btn">Изпрати</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div>
+                            <h3>Имейл</h3>
+                            <p>stilianmatev@gmail.com</p>
+                        </div>
+                    </div>
+                    @*
+                    <div class="contact-item">
+                        <div class="contact-icon">🌐</div>
+                        <div>
+                            <h3>Социални мрежи</h3>
+                            <p>Намерете ме в социалните мрежи</p>
+                        </div>
+                    </div>
+                    *@
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="#" class="social-icon">👨‍💻</a>
+                <a href="#" class="social-icon">📷</a>
+                <a href="#" class="social-icon">🎵</a>
+            </div>
+            <p>&copy; <span id="currentYear"></span> Стилиян. Всички права запазени.</p>
+        </div>
+    </footer> -->
+
+    <script>
+                document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer (if applicable)
+            const currentYearElement = document.getElementById('currentYear');
+            if (currentYearElement) {
+                currentYearElement.textContent = new Date().getFullYear();
+            }
+
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('themeToggle');
+
+            // Function to update the theme icon
+            function updateThemeIcon() {
+                if (document.body.classList.contains('dark-theme')) {
+                    themeToggle.textContent = '☀️'; // Sun for light mode
+                } else {
+                    themeToggle.textContent = '🌓'; // Moon for dark mode
+                }
+            }
+
+            // Function to apply theme based on stored preference
+            function applyStoredTheme() {
+                const storedTheme = localStorage.getItem('theme');
+                if (storedTheme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+                updateThemeIcon();
+            }
+
+            // Check for user preference in localStorage or system setting
+            if (localStorage.getItem('theme') === 'dark' ||
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+            }
+
+            updateThemeIcon();
+
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+
+                // Save user preference
+                if (document.body.classList.contains('dark-theme')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+
+                updateThemeIcon();
+            });
+
+        });
+                // JavaScript
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Set current year in footer
+                    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+                    // Theme toggle functionality
+                    const themeToggle = document.getElementById('themeToggle');
+                    themeToggle.addEventListener('click', function() {
+                        console.log("change?")
+                        document.body.classList.toggle('dark-theme');
+                        updateThemeIcon();
+                    });
+
+                    function updateThemeIcon() {
+                        if (document.body.classList.contains('dark-theme')) {
+                            themeToggle.textContent = '☀️';
+                        } else {
+                            themeToggle.textContent = '🌓';
+                        }
+                    }
+
+                    // Check if user prefers dark mode
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.body.classList.add('dark-theme');
+                        updateThemeIcon();
+                    }
+
+                    // Form submission
+                    const contactForm = document.getElementById('contactForm');
+                    if (contactForm) {
+                        contactForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            alert('Благодаря за съобщението! Ще се свържа с вас скоро.');
+                            contactForm.reset();
+                        });
+                    }
+
+                    // Smooth scrolling for navigation
+                    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                        anchor.addEventListener('click', function(e) {
+                            e.preventDefault();
+
+                            const target = document.querySelector(this.getAttribute('href'));
+                            if (target) {
+                                window.scrollTo({
+                                    top: target.offsetTop,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        });
+                    });
+
+                    // Animation on scroll
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('animate');
+                            }
+                        });
+                    }, { threshold: 0.1 });
+
+                    document.querySelectorAll('.skill-category, .interest-item, .contact-item').forEach(item => {
+                        observer.observe(item);
+                        // Add transition styles
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(20px)';
+                        item.style.transition = 'opacity 0.5s, transform 0.5s';
+                    });
+
+                    // Define the animate class
+                    document.head.insertAdjacentHTML('beforeend', `
+                        <style>
+                            .animate {
+                                opacity: 1 !important;
+                                transform: translateY(0) !important;
+                            }
+                        </style>
+                    `);
+                });
+    </script>
+</body>
+</html>
