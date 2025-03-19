@@ -1,5 +1,5 @@
 ﻿@page
-@model IndexModel
+@model Portfolio.Areas.Identity.Pages.Account.Manage.IndexModel
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
@@ -7,23 +7,69 @@
 
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
+
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Profile Information</h5>
+            <button id="edit-profile-button" class="btn btn-sm btn-outline-primary">Edit</button>
+        </div>
+
+        <div class="text-center mb-3">
+            <img src="@(Model.ProfilePictureUrl ?? "/images/default-profile.png")" alt="Profile Picture" class="rounded-circle" width="100" height="100">
+        </div>
+
+        <div id="profile-info">
+            <p><strong>Username:</strong> @Model.Username</p>
+            <p><strong>Email:</strong> @Model.Email</p>
+            <p><strong>Phone Number:</strong> @(Model.Input.PhoneNumber ?? "Not set")</p>
+        </div>
+
+        <form id="profile-form" method="post" enctype="multipart/form-data" class="d-none">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Input.Username" class="form-control" />
+                <label asp-for="Input.Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                <input asp-for="Email" class="form-control" disabled />
+                <label asp-for="Email" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <div class="mb-3">
+                <label asp-for="Input.ProfilePicture" class="form-label">Profile Picture (optional)</label>
+                <input asp-for="Input.ProfilePicture" class="form-control" type="file" accept="image/*" />
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" id="cancel-edit" class="btn btn-secondary me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         </form>
+
+        <div class="mt-4">
+            <a href="/LikedComments" class="btn btn-outline-secondary w-100 mb-2">Liked Comments</a>
+            <a href="/LikedProjects" class="btn btn-outline-secondary w-100">Liked Projects</a>
+        </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("edit-profile-button").addEventListener("click", function () {
+        document.getElementById("profile-info").classList.add("d-none");
+        document.getElementById("profile-form").classList.remove("d-none");
+        this.classList.add("d-none");
+    });
+
+    document.getElementById("cancel-edit").addEventListener("click", function () {
+        document.getElementById("profile-info").classList.remove("d-none");
+        document.getElementById("profile-form").classList.add("d-none");
+        document.getElementById("edit-profile-button").classList.remove("d-none");
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -1,15 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+﻿using Core.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Portfolio.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace Portfolio.Areas.Identity.Pages.Account.Manage
 {
@@ -17,66 +13,53 @@ namespace Portfolio.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IImageUploadService _imageUploadService;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IImageUploadService imageUploadService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _imageUploadService = imageUploadService;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public string Username { get; set; }
+        [BindProperty]
+        public ProfileViewModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string ProfilePictureUrl { get; set; }
+
         [TempData]
         public string StatusMessage { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public class InputModel
-        {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Phone]
-            [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
-        }
 
         private async Task LoadAsync(User user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+            Email = email;
+            ProfilePictureUrl = user.ProfilePicture?.Path ?? "/images/default-profile.png";
 
-            Input = new InputModel
+            Input = new ProfileViewModel
             {
-                PhoneNumber = phoneNumber
+                Username = userName,
+                Email = email,
+                PhoneNumber = phoneNumber,
+                ProfilePictureUrl = ProfilePictureUrl
             };
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.ProfilePicture)
+                .FirstOrDefaultAsync(u => u.Id == int.Parse(_userManager.GetUserId(User)));
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -88,16 +71,43 @@ namespace Portfolio.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.ProfilePicture)
+                .FirstOrDefaultAsync(u => u.Id == int.Parse(_userManager.GetUserId(User)));
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    await LoadAsync(user);
+            //    return Page();
+            //}
+            if (string.IsNullOrWhiteSpace(Input.Username))
             {
-                await LoadAsync(user);
-                return Page();
+                ModelState.AddModelError("Input.Username", "Username is required.");
+            }
+
+            //if (string.IsNullOrWhiteSpace(Input.Email) || !new EmailAddressAttribute().IsValid(Input.Email))
+            //{
+            //    ModelState.AddModelError("Input.Email", "A valid email is required.");
+            //}
+
+            if (string.IsNullOrWhiteSpace(Input.PhoneNumber) || !new PhoneAttribute().IsValid(Input.PhoneNumber))
+            {
+                ModelState.AddModelError("Input.PhoneNumber", "A valid phone number is required.");
+            }
+
+            if (Input.Username != user.UserName)
+            {
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                if (!setUserNameResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set username.";
+                    return RedirectToPage();
+                }
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -109,6 +119,13 @@ namespace Portfolio.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+            }
+
+            if (Input.ProfilePicture != null)
+            {
+                var imageUrl = await _imageUploadService.UploadImageAsync(Input.ProfilePicture);
+                user.ProfilePicture = new Image { Path = imageUrl };
+                await _userManager.UpdateAsync(user);
             }
 
             await _signInManager.RefreshSignInAsync(user);
