@@ -1,0 +1,92 @@
+﻿@model ProjectIndexFilterModelView
+
+
+<div class="main-content">
+    <aside class="filter-sidebar">
+        <h2>Филтриране</h2>
+        <form method="post" class="filter-form">
+            <label for="Categoty">Категория</label><br />
+            <select id="Categoty" asp-for="CategoryId" asp-items="Model.Categories" class="filter-select">
+                <option value="">Изберете категория</option>
+            </select><br />
+            <label for="Title">Заглавие на проект</label><br />
+            <input id="Title" asp-for="Title" class="filter-input" /><br />
+            <label for="ShortDescription">Кратко описание</label><br />
+            <input id="ShortDescription" asp-for="ShortDescription" class="filter-input" /><br />
+            <button type="submit" class="filter-button">Запази</button>
+        </form>
+    </aside>
+
+    <section class="project-cards">
+        @foreach (var item in Model.Projects)
+        {
+            <div class="project-card">
+                <a asp-action="Project1" asp-route-id="@item.Id">
+                    <img class="project-image" src="@item.Image.Path" alt="@item.Title">
+                </a>
+                <div class="project-info">
+                    <h3>@Html.DisplayFor(modelItem => item.Title)</h3>
+                    <p>@Html.DisplayFor(modelItem => item.ShortDescription)</p>
+                    <p><strong>Категория:</strong> @Html.DisplayFor(modelItem => item.Category.Name)</p>
+                    <a class="btn btn-primary" asp-action="Project1" asp-route-id="@item.Id">Details</a>
+                </div>
+            </div>
+        }
+    </section>
+</div>
+
+<style>
+    :root {
+        --left-margin: 0px;
+        --projects-per-row: 3;
+    }
+
+    .main-content {
+        margin-left: var(--left-margin);
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .filter-sidebar {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+    }
+
+    .project-cards {
+        display: grid;
+        grid-template-columns: repeat(var(--projects-per-row), 300px);
+        gap: 15px;
+        justify-content: start;
+        
+        flex-grow: 1;
+    }
+
+    .project-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 300px;
+        transition: transform 0.2s;
+    }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .project-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .project-info {
+        padding: 15px;
+    }
+</style>

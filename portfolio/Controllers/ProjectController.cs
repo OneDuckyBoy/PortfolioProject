@@ -70,6 +70,47 @@ namespace Portfolio.Controllers
             ViewData["message from controller"] = "Hello from the backend : )";
             return View(model);
         }
+        [Route("Projects")]
+        public IActionResult All(ProjectIndexFilterModelView? filter)
+        {
+
+            var likedByUser = _projectService.GetAll().AsQueryable().Include(p => p.LikedProjects).ThenInclude(lp => lp.User).Where(u => u.User == _userManager.GetUserAsync(User).Result);
+
+            var query = _projectService.GetAll().AsQueryable();
+            if (filter.CategoryId != null)
+            {
+                query = query.Where(p => p.CategoryId == filter.CategoryId.Value);
+            }
+            if (filter.Title != null)
+            {
+                query = query.Where(p => p.Title.Contains(filter.Title));
+            }
+            if (filter.ShortDescription != null)
+            {
+                query = query.Where(p => p.ShortDescription.Contains(filter.ShortDescription));
+            }
+
+            var model = new ProjectIndexFilterModelView
+            {
+                CategoryId = filter.CategoryId,
+                Title = filter.Title,
+                ShortDescription = filter.ShortDescription,
+                Categories = new SelectList(_categoryService.GetAll(), "Id", "Name"),
+                Projects = query.Include(p => p.Category).Include(p => p.Image).ToList(),
+            };
+
+            IEnumerable<Project> projects = _projectService.GetAll().ToList();
+            IEnumerable<Image> images = _imageService.GetAll();
+            IEnumerable<Category> categories = _categoryService.GetAll().ToList();
+            foreach (var item in projects)
+            {
+                item.Image = images.FirstOrDefault(img => img.Id == item.ImageId);
+                item.Category = categories.FirstOrDefault(cat => cat.Id == item.CategoryId);
+            }
+
+            ViewData["message from controller"] = "Hello from the backend : )";
+            return View(model);
+        }
         [Route("Project/Create")]
         public IActionResult Create()
         {
@@ -304,7 +345,7 @@ namespace Portfolio.Controllers
                 project.ImageId = viewModel.ImageId ?? project.ImageId;
 
                 _projectService.Update(project);
-                return RedirectToAction("Index");
+                return RedirectToAction(viewModel.Id+"");
             }
 
             return View(viewModel);

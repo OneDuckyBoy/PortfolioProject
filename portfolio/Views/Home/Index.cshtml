@@ -76,6 +76,7 @@
         </div>
         @* <button class="top-right-button" asp-controller="Category" asp-action="All" href="">Всички категории</button> *@
         <a class="top-right-button" asp-controller="Category" asp-action="All">Всички категории</a>
+        <a class="top-right-button-1" asp-controller="Project" asp-action="All">Всички проекти</a>
 
 
 
@@ -200,6 +201,22 @@
         position: absolute;
         top: -50px;
         right: 5px;
+        padding: 10px 20px;
+        background-color: darkorange;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.6s ease;
+    }
+
+    .top-right-button-1 {
+        text-decoration: none;
+        position: absolute;
+        top: -50px;
+        right: 200px;
         padding: 10px 20px;
         background-color: darkorange;
         color: white;
