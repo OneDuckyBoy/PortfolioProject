@@ -21,11 +21,24 @@
             <p>@Model.ShortDescription</p>
         </div>
     </header>
-    <div class="divider"></div>
+    @* <div class="divider"></div> *@
 
     <section class="project-details">
         <div class="container">
-            <h2>Project Details</h2>
+            <div class="project-details-header">
+                <h2>Project Details</h2>
+                @if (User.IsInRole("Admin"))
+                {
+                <div class="dropdown project-details-menu">
+                    <button class="btn dropdown-toggle" type="button" id="projectDetailsMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="projectDetailsMenu">
+                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Edit</a></li>
+                    </ul>
+                </div>
+                }
+            </div>
             <p>@Html.Raw(@Model.Description)</p>
         </div>
     </section>
@@ -690,5 +703,24 @@
     .comment-image {
         margin-bottom: 10px;
         border-radius: 8px;
+    }
+</style>
+
+<style>
+    .project-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .project-details-menu .btn {
+        padding: 0;
+        background: none;
+        border: none;
+    }
+
+    .project-details-menu .fa-ellipsis-v {
+        font-size: 18px;
+        color: #666;
     }
 </style>
