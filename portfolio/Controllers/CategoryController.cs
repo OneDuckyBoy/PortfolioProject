@@ -83,6 +83,10 @@ namespace Portfolio.Controllers
         public IActionResult ProjectsInCategory(int id)
         {
             var category = _categoryService.GetById(id);
+            if (category == null)
+            {
+                return NotFound();  // Return NotFound if category is null
+            }
             category.Projects = _projectService.GetAll().AsQueryable()
          .Where(p => p.CategoryId == id)
          .Include(p => p.Image)
@@ -96,6 +100,10 @@ namespace Portfolio.Controllers
         public IActionResult Details(int id)
         {
             var category = _categoryService.GetById(id);
+            if (category == null)
+            {
+                return NotFound();  // Return a NotFoundResult if category is null
+            }
             category.Image =_imageService.GetById(category.Id);
             return View(category);
         }
@@ -105,26 +113,14 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CategoryCreateViewModel model)
+        public async Task<IActionResult> Create(CategoryCreateViewModel model)
         {
-            //if (ModelState.IsValid)
-            //{
-
-            //   category.Image= _imageService.Add(category.Image);
-            //    _categoryService.Add(category);
-            //    return RedirectToAction("Index");
-            //}
-            //return View(category);
             if (ModelState.IsValid)
             {
                 // Handle the file upload using the imageUploadService
                 if (model.Image != null && model.Image.Length > 0)
                 {
-
-
-
-                    var imageUrl = _ImageUploadService.UploadImageAsync(model.Image).Result;
-
+                    var imageUrl = await _ImageUploadService.UploadImageAsync(model.Image); // Use await for async method
 
                     var image = new Image
                     {
@@ -133,7 +129,6 @@ namespace Portfolio.Controllers
 
                     image = _imageService.Add(image);
                     // Save the category details to the database
-
                     var category = new Category
                     {
                         Name = model.Name,
@@ -147,10 +142,9 @@ namespace Portfolio.Controllers
                 }
             }
 
-
-
             return View(model);
         }
+
 
         public IActionResult Delete(int id)
         {
@@ -196,11 +190,6 @@ namespace Portfolio.Controllers
             return View(category);
 
 
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _categoryService.EntityExists(id);
         }
     }
 }
