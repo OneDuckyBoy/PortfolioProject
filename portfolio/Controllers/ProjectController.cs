@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Portfolio.Controllers
 {
@@ -18,9 +20,10 @@ namespace Portfolio.Controllers
         public readonly IImageUploadService _ImageUploadService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IService<LikedProjects> _likedProjectsService;
 
 
-        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager,  IImageUploadService ImageUploadService, IService<Comment> commentCategory)
+        public ProjectController(IService<Project> projectService, IService<Image> imageService, IService<Category> categoryService, UserManager<User> userManager, SignInManager<User> signInManager,  IImageUploadService ImageUploadService, IService<Comment> commentCategory, IService<LikedProjects> likedProjectsService)
         {
             _projectService = projectService;
             _imageService = imageService;
@@ -29,6 +32,7 @@ namespace Portfolio.Controllers
             _signInManager = signInManager;
             _ImageUploadService = ImageUploadService;
             _commentCategory = commentCategory;
+            _likedProjectsService = likedProjectsService;
         }
         public IActionResult Index(ProjectIndexFilterModelView? filter)
         {
@@ -226,6 +230,74 @@ namespace Portfolio.Controllers
             return View(project);
         }
 
+        [Authorize]
+        [HttpPost("Project/LikeProject/{projectId}/{username}")]
+        public async Task<IActionResult> Like(int projectId, string username)
+        {
+            var project = _projectService.GetById(projectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+            User user = await _userManager.FindByNameAsync(username);
+            //var currUser = await _userManager.GetUserAsync(User);//1;//
+            var userId1 = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currUser = await _userManager.FindByIdAsync(userId1);
+
+            int userId = user.Id;
+            //var likedProject = project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
+            var likedProject = _likedProjectsService.GetAll().Select(l => l.ProjectId == projectId && l.UserId == userId).ToList();//project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
+
+            if (likedProject.Count()==1)//for some reason it is one, when it is empty
+            {
+                project.LikedProjects.Add(new LikedProjects { UserId = currUser.Id, ProjectId = projectId });
+                Console.WriteLine();
+            }
+            
+            _projectService.Update(project);
+
+            var likeCount = project.LikedProjects.Count;
+            var liked = likedProject == null;
+
+            return Json(new { liked, likeCount });
+        }
+
+
+        [Authorize]
+        [HttpPost("Project/removeLikeFromProject/{projectId}/{username}")]
+        public async Task<IActionResult> RemoveLikeFromProject(int projectId, string username)
+        {
+            var project = _projectService.GetById(projectId);
+            User user = await _userManager.FindByNameAsync(username);
+
+            // var currUser = _userManager.GetUserAsync(User);//1;//
+
+            var userId = _userManager.GetUserAsync(User).Result.Id; //_userManager.FindByNameAsync(username).Result.Id;
+                                                                    //var likedProject = _likedProjectsService.GetAll().AsQueryable().Where(p => p.ProjectId == projectId).Where(c => c.UserId == userId).ToArray();
+            var likedProject = _likedProjectsService.GetAll().Select(l => l.ProjectId == projectId && l.UserId == userId).ToList();//project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
+
+            var likeCount = project.LikedProjects.Count;
+            if (!likedProject.IsNullOrEmpty())
+            {
+                var allProjects = _projectService.GetAll().ToList();
+                _projectService.DeleteFromLikedProjects(projectId, userId);
+                
+
+                //comment.LikedComments.Remove(likedComment[0]);
+
+                Console.WriteLine();
+            }
+            bool asd = !likedProject.IsNullOrEmpty();
+
+            var likedCommentIsGone = _likedProjectsService.GetAll().AsQueryable().Where(p => p.ProjectId == projectId).Where(c => c.UserId == userId).ToArray().IsNullOrEmpty();
+            _projectService.Update(project);
+
+            Console.WriteLine(likedCommentIsGone);
+            return Json(new { removed = likedProject != null, likeCount });
+        }
+
+
+
 
 
         [Route("Project/{id}")]
@@ -263,6 +335,7 @@ namespace Portfolio.Controllers
             project.Category = _categoryService.GetById(project.CategoryId);
             project.Comments = _commentCategory.GetAll().AsQueryable().Include(c => c.Image).Include(c => c.User).Where(c => c.ProjectId == project.Id).Include(c => c.LikedComments).ThenInclude(l=>l.User).ToList();
             project.Image = _imageService.GetById(project.ImageId);
+            project.LikedProjects = _likedProjectsService.GetAll().Where(l => l.ProjectId == project.Id).ToList();
             var user = _userManager.FindByIdAsync((project.UserId + "")).Result;
             if (user != null && user.ProfilePictureId.HasValue)
             {

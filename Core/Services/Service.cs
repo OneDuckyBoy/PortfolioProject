@@ -56,5 +56,9 @@ namespace Core.Services
         {
             _repository.DeleteFromLikedComments(commentId, userId);
         }
+        public void DeleteFromLikedProjects(int commentId, int userId)
+        {
+            _repository.DeleteFromLikedProjects(commentId, userId);
+        }
     }
 }

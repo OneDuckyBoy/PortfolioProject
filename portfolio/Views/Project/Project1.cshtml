@@ -9,9 +9,9 @@
     ViewData["Title"] = Model?.Title ?? "Project Details";
     var isAuthenticated = User.Identity.IsAuthenticated;
     var loginUrl = Url.Page("/Account/Login", new { area = "Identity", returnUrl = ViewContext.HttpContext.Request.Path });
-
+    var userId = User.Identity.IsAuthenticated ? int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : (int?)null;
 }
-<main id="currmain" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")">
+<main id="currmain" project-user-name="@(Model.User.UserName)" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")">
     <header class="hero">
         <div class="hero-image-container">
             <img class="hero-image" src="@Model.Image.Path" alt="@Model.Title">
@@ -19,6 +19,16 @@
         <div class="hero-text">
             <h1>@Model.Title</h1>
             <p>@Model.ShortDescription</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <i class="fa @(@Model.LikedProjects.Any(l => l.UserId == userId&& l.ProjectId == Model.Id) ? "fa-heart" : "fa-heart-o") like-button project-like" 
+                   data-project-id="@Model.Id"></i>
+                
+            }
+            else
+            {
+                <i class="fa fa-heart-o like-button project-like" data-project-id="@Model.Id"></i>
+            }
         </div>
     </header>
     @* <div class="divider"></div> *@
@@ -136,12 +146,12 @@
                                 <span class="like-count">@comment.LikedComments.Count</span>
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button"
+                                    <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button comment-like"
                                        data-comment-id="@comment.Id"></i>
                                 }
                                 else
                                 {
-                                    <i class="fa fa-heart-o like-button" data-comment-id="@comment.Id"></i>
+                                    <i class="fa fa-heart-o like-button comment-like" data-comment-id="@comment.Id"></i>
                                 }
                             </div>
                         </div>
@@ -164,7 +174,7 @@
 
    // ------------------ променя сърцето успешно
        document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".like-button").forEach(button => {
+         document.querySelectorAll(".comment-like").forEach(button => {
             button.addEventListener("click", function () {
                 let commentId = this.getAttribute("data-comment-id");
                 let likeCountSpan = this.closest(".comment-actions").querySelector(".like-count");
@@ -207,6 +217,50 @@
                 }
             });
         });
+
+            button = document.getElementsByClassName("project-like")[0]
+    button.addEventListener("click", function () {
+        console.log("Start liking the project");
+             let projectId = this.getAttribute("data-project-id");
+             // let likeCountSpan = this.closest(".comment-actions").querySelector(".like-count");
+             // const userId = "@User.FindFirstValue(ClaimTypes.NameIdentifier)"; // дава логнатия юзър
+               let username = this.closest("#currmain").getAttribute("project-user-name");
+
+
+             // console.log(commentId);
+             //  console.log(username);
+             let main = document.getElementById("currmain");
+                 console.log(main)
+                 if (!main.classList.contains("authenticated")) {
+             // Пренасочване към страницата за вход
+             let loginUrl = document.getElementById("login");
+             window.location.href = loginUrl;
+             console.log("not logged in");
+             return;
+         }
+             if (this.classList.contains("fa-heart-o")) {
+
+
+                  fetch(`/Project/LikeProject/${projectId}/${username}`, {
+                 method: "POST"
+             })
+             console.log("liked start");
+                 this.classList.remove("fa-heart-o");
+                 this.classList.add("fa-heart");// Пълно сърце
+                // likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;// Увеличаване на брояча
+                 console.log("liked end");
+             }
+             else if (this.classList.contains("fa-heart")){
+                    fetch(`/Project/removeLikeFromProject/${projectId}/${username}`, {
+                 method: "POST"
+             })
+                 console.log("disliked start");
+                 this.classList.remove("fa-heart");
+                 this.classList.add("fa-heart-o");// Празно сърце
+                 // likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1; //Намаляване на брояча
+                 console.log("disliked end");
+             }
+         });
     });
 
     //----------------------------------------------------------------------

@@ -33,7 +33,7 @@ namespace Portfolio.Controllers
 
             return View(categories);
         }
-        [Route("Category/All")]
+        [Route("Categories")]
         public IActionResult All()
         {
             var images = _imageService.GetAll().ToDictionary(img => img.Id);

@@ -17,5 +17,6 @@ namespace Core.Services
         bool EntityExists(int id);
         void Detach(T entity);
         void DeleteFromLikedComments(int commentId, int userId);
+        void DeleteFromLikedProjects(int projectId, int userId);
     }
 }

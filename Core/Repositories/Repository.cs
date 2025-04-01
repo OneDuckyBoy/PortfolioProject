@@ -73,5 +73,17 @@ namespace Core.Repositories
             }
             
         }
+
+        public void DeleteFromLikedProjects(int projectId, int userId)
+        {
+            var projectsQuery = _context.LikedProjects.Where(c => c.ProjectId == projectId && c.UserId == userId).ToList();
+            if (!projectsQuery.IsNullOrEmpty())
+            {
+                var project = projectsQuery.ToList()[0];
+
+                _context.LikedProjects.Remove(project);
+                _context.SaveChanges();
+            }
+        }
     }
 }
