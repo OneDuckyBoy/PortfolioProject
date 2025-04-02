@@ -4,9 +4,9 @@
 @{
 	ViewData["Title"] = "Categories";
 }
-<h1>Categories</h1>
+<h1>Категории</h1>
 @model IEnumerable<Category>
-<a asp-action="Create" class="back-button">Create new category</a>
+<a asp-action="Create" class="back-button">Създай нова категория</a>
 <table class="table">
 	<tr>
 		<th>
@@ -35,15 +35,15 @@
 				<img width= 300px class="" src="@item.Image.Path" alt="@item.Image.Path">
 			</td>
 			<td>
-				<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-				<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-				<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+				<a asp-action="Edit" asp-route-id="@item.Id">Промени</a> |
+				<a asp-action="Details" asp-route-id="@item.Id">Информация</a> |
+				<a asp-action="Delete" asp-route-id="@item.Id">Изтрий</a>
 			</td>
 		</tr>
 	}
 
 
- <h2>Category Slider</h2>
+ <h2>Слайдър с категории</h2>
 
 	<!-- <div class="slider-container">
 

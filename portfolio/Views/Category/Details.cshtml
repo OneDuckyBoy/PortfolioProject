@@ -82,19 +82,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Category Details</h1>
+        <h1>Детайли за категориите</h1>
         <div class="details">
             <label>Id:</label>
             <p>@Model.Id</p>
-            <label>Name:</label>
+            <label>Име:</label>
             <p>@Model.Name</p>
-            <label>Description:</label>
+            <label>Описание:</label>
             <p>@Model.Description</p>
-            <label>Image:</label>
+            <label>Снимка:</label>
             <img src="@Model.Image.Path" alt="Image">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn">Edit</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn">промяна на категорията</a>
         </div>
-        <a asp-action="Index" class="btn">Back to list</a>
+        <a asp-action="Index" class="btn">Назад към списъка</a>
     </div>
 </body>
 </html>

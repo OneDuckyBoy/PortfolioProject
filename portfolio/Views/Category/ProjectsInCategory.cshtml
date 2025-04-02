@@ -9,7 +9,7 @@
     ViewData["Title"] = "Projects in " + Model.Name;
 }
 
-<h1>Projects in @Model.Name</h1>
+<h1>Проекти в Категория @Model.Name</h1>
 
 <div class="container">
     <div class="row">
@@ -22,7 +22,7 @@
                         <h5 class="card-title">@project.Title</h5>
                         <p class="card-text">@project.ShortDescription</p>
                         <p class="card-text"><small class="text-muted">@project.Comments.Count() comments</small></p>
-                        <a href="@Url.Action("Project1", "Project", new { id = project.Id })" class="btn btn-primary">View Project</a>
+                        <a href="@Url.Action("Project1", "Project", new { id = project.Id })" class="btn btn-primary">Виж проекта</a>
                     </div>
                 </div>
             </div>
