@@ -109,7 +109,21 @@ namespace Portfolio.Controllers
         }
 
 
-
+        [Authorize]
+        [Route("LikedComments")]
+        public async Task<IActionResult> LikedComments()
+        {
+            int userId = _userManager.GetUserAsync(User).Result.Id;
+            //var likedByUser= _projectService.GetAll().AsQueryable().Include(p => p.LikedProjects).Where(u => u.User.Id == userId).ToList();
+            List<Comment> likedByUser = _commentService.GetAll().AsQueryable()
+                .Include(p => p.Image)
+                .Include(p => p.User).ThenInclude(u=>u.ProfilePicture)
+                .Include(c=>c.Project)
+               .Include(p => p.LikedComments)
+               .Where(p => p.LikedComments.Any(lp => lp.UserId == userId))
+               .ToList();
+            return View(likedByUser);
+        }
 
         [HttpGet("Comment/GetLikeCount/{commentId}")]
         public IActionResult GetLikeCount(int commentId)

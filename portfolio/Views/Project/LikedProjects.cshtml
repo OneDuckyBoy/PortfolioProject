@@ -6,6 +6,7 @@
     // var userId = User.Identity.IsAuthenticated ? int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : (int?)null;
         
     var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+    var defProfilePic = "https://api.dicebear.com/8.x/thumbs/svg?seed=buddybuddy&flip=false&rotation=0&scale=90&radius=0&backgroundColor=ffcc00,ff6600,00cc99,3366ff,9900cc&backgroundType=solid,gradientLinear";
 
 }
 @model List<Portfolio.Models.Project>

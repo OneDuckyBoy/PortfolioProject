@@ -10,6 +10,7 @@
     var isAuthenticated = User.Identity.IsAuthenticated;
     var loginUrl = Url.Page("/Account/Login", new { area = "Identity", returnUrl = ViewContext.HttpContext.Request.Path });
     var userId = User.Identity.IsAuthenticated ? int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : (int?)null;
+    var defProfilePic = "https://api.dicebear.com/8.x/thumbs/svg?seed=buddybuddy&flip=false&rotation=0&scale=90&radius=0&backgroundColor=ffcc00,ff6600,00cc99,3366ff,9900cc&backgroundType=solid,gradientLinear";
 }
 <main id="currmain" project-user-name="@(Model.User.UserName)" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")">
     <header class="hero">
@@ -93,7 +94,7 @@
                 @foreach (var comment in Model.Comments)
                 {
                     <div class="comment" data-comment-id="@comment.Id">
-                        <img class="profile-picture" src="@(comment.User?.ProfilePicture?.Path ?? "default-profile-picture.jpg")" alt="Profile Picture" />
+                        <img class="profile-picture" src="@(comment.User?.ProfilePicture?.Path ?? defProfilePic)" alt="Profile Picture" />
                         <div class="comment-content">
                             <div class="comment-header">
                                 <p><strong><span class="username">@(comment.User?.UserName ?? "Unknown User")</span></strong> <span class="comment-date">@comment.DateAdded.ToString("dd MMM yyyy")</span></p>

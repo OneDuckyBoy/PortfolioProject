@@ -1,0 +1,215 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Security.Claims
+
+@{
+    var defProfilePic = "https://api.dicebear.com/8.x/thumbs/svg?seed=buddybuddy&flip=false&rotation=0&scale=90&radius=0&backgroundColor=ffcc00,ff6600,00cc99,3366ff,9900cc&backgroundType=solid,gradientLinear";
+}
+@model List<Comment>
+@* liked comments *@
+<div id="currmain" comment-user-name="@(Model.FirstOrDefault()?.User.UserName)" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")>
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var comment in Model)
+        {
+            <div class="comment" data-comment-id="@comment.Id">
+                <img class="profile-picture" src="@(comment.User?.ProfilePicture?.Path ?? defProfilePic)" alt="Profile Picture" />
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <p><strong><span class="username">@(comment.User?.UserName ?? "Unknown User")</span></strong> <span class="comment-date">@comment.DateAdded.ToString("dd MMM yyyy")</span></p>
+                        
+                       @* @if (User.IsInRole("Admin") || (comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                        {
+                            <div class="dropdown comment-menu">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenu@(comment.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu@(comment.Id)">
+                                    @if ((comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier)){
+                                    <li><button class="dropdown-item edit-comment-btn" data-comment-id="@comment.Id">Edit</button></li>
+                                    }
+                                    <li><button class="dropdown-item delete-comment-btn" data-comment-id="@comment.Id">Delete</button></li>
+                                </ul>
+                            </div>
+                        }
+                        *@
+                    </div>
+
+                    <div class="comment-body" id="comment-body-@comment.Id">
+                        @if (comment.Image != null)
+                        {
+                            <img style="width:350px" class="comment-image" src="@comment.Image.Path" alt="Comment Image" id="comment-image-@comment.Id" />
+                        }
+                        @if (!string.IsNullOrEmpty(comment.Text))
+                        {
+                            <p id="comment-text-@comment.Id">@Html.Raw(comment.Text)</p>
+                        }
+                    </div>
+
+                    <div class="edit-form-container" id="edit-form-@comment.Id" style="display: none;">
+                        <form id="edit-comment-form-@comment.Id" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <textarea class="form-control" id="edit-text-@comment.Id" name="commentText">@comment.Text</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit-image-@comment.Id" class="form-label">Change Image (optional)</label>
+                                <input type="file" class="form-control" id="edit-image-@comment.Id" name="commentImage" accept="image/*">
+                                @if (comment.Image != null)
+                                {
+                                    <div class="form-text">Leave empty to keep current image</div>
+                                }
+                            </div>
+                            <input type="hidden" name="commentId" value="@comment.Id">
+                            <button type="button" class="btn btn-primary save-edit-btn" data-comment-id="@comment.Id">Save</button>
+                            <button type="button" class="btn btn-secondary cancel-edit-btn" data-comment-id="@comment.Id">Cancel</button>
+                        </form>
+                    </div>
+
+                    <div class="comment-actions">
+                        <span class="like-count">@comment.LikedComments.Count</span>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <i class="fa @(comment.LikedComments.Any(l => l.UserId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))) ? "fa-heart" : "fa-heart-o") like-button comment-like"
+                               data-comment-id="@comment.Id"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-heart-o like-button comment-like" data-comment-id="@comment.Id"></i>
+                        }
+                    </div>
+                    <div class="project-reference">
+                        <a class="btn " asp-controller="Project" asp-action="Project1" asp-route-id="@comment.Project.Id">проекта от който е коментара (@comment.Project.Title)</a>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="divider"></div>
+        }
+    }
+    else
+    {
+        <p>You haven't liked a comment yet</p>
+    }
+
+</div>
+<style>
+    .project-reference{
+        display: flex;
+        flex-direction: column;
+    }
+    .like-button{
+        align-self: flex-end;
+        padding-top: 10px;
+        padding-right: 10px;
+        background-color
+    }
+
+    .divider {
+        width: 100%;
+        height: 3px;
+        background-color: #ccc;
+        margin: 10px auto;
+    }
+    .comment {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .profile-picture {
+        width: 50px; /* Задава ширината на изображението */
+        height: 50px; /* Задава височината на изображението */
+        border-radius: 50%; /* Закръгля ъглите, за да направи изображението кръгло */
+        object-fit: cover; /* Запазва съотношението на изображението и го изрязва, ако е необходимо */
+        margin-right: 10px; /* Добавя отстояние отдясно */
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-date {
+        font-size: 0.8rem;
+        color: #888;
+    }
+
+    .comment-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+
+    .comment-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .like-count {
+        margin-right: 5px;
+    }
+
+    .like-button {
+        cursor: pointer;
+        color: #888;
+    }
+
+        .like-button.fa-heart {
+            color: red;
+        }
+
+</style>
+
+
+
+<script src="https://kit.fontawesome.com/734a4e4265.js" crossorigin="anonymous"></script>
+<script>
+    console.log("hello there")
+    document.addEventListener("DOMContentLoaded", function () {
+         document.querySelectorAll(".comment-like").forEach(button => {
+            button.addEventListener("click", function () {
+                let commentId = this.getAttribute("data-comment-id");
+                let likeCountSpan = this.closest(".comment-actions").querySelector(".like-count");
+                 // const userId = "@User.FindFirstValue(ClaimTypes.NameIdentifier)"; // дава логнатия юзър
+                   let username = this.closest(".comment-content").querySelector(".username").textContent;
+
+
+                 console.log(commentId);
+                  console.log(username);
+                   let main = document.getElementById("currmain");
+                    console.log(main)
+                    // if (false){//(!main.classList.contains("authenticated")) {
+                    //  // Пренасочване към страницата за вход
+                    //   let loginUrl = document.getElementById("login");
+                    //      window.location.href = loginUrl;
+                    //      console.log("not logged in");
+                    //      return;
+                    //  }
+                if (this.classList.contains("fa-heart-o")) {
+
+
+                  fetch(`/Comment/LikeComment/${commentId}/${username}`, {
+                     method: "POST"
+                 })
+                   console.log("liked start");
+                    this.classList.remove("fa-heart-o");
+                    this.classList.add("fa-heart");// Пълно сърце
+                    likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;// Увеличаване на брояча
+                      console.log("liked end");
+                }
+                   else if (this.classList.contains("fa-heart")){
+                      fetch(`/Comment/removeLikeFromComment/${commentId}/${username}`, {
+                      method: "POST"
+                  })
+                    console.log("disliked start");
+                    this.classList.remove("fa-heart");
+                    this.classList.add("fa-heart-o");// Празно сърце
+                    likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1; //Намаляване на брояча
+                      console.log("disliked end");
+                }
+            });
+        });
+        });
+</script>
