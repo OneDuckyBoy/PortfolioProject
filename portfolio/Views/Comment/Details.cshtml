@@ -3,29 +3,29 @@
 <h2>Comment Details</h2>
 
 <div>
-    <h4>Comment</h4>
+    <h4>Коментар</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            Text
+            Текст
         </dt>
         <dd class="col-sm-10">
             @Model.Text
         </dd>
         <dt class="col-sm-2">
-            Project
+            Проект
         </dt>
         <dd class="col-sm-10">
             @Model.Project.Title
         </dd>
         <dt class="col-sm-2">
-            User
+            Потребтел
         </dt>
         <dd class="col-sm-10">
             @Model.User.UserName
         </dd>
         <dt class="col-sm-2">
-            Date Added
+            Добавен на: 
         </dt>
         <dd class="col-sm-10">
             @Model.DateAdded
@@ -33,6 +33,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Промени коментара</a>
+    <a asp-action="Index" class="btn btn-secondary">Назад към списъка</a>
 </div>

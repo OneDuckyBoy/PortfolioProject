@@ -8,6 +8,8 @@
 }
 @model List<Comment>
 @* liked comments *@
+<h1>Харесани Коментари</h1>
+<div class="divider"></div>
 <div id="currmain" comment-user-name="@(Model.FirstOrDefault()?.User.UserName)" class="@(User.Identity.IsAuthenticated ? "authenticated" : "")>
     @if (Model != null && Model.Any())
     {
@@ -80,7 +82,7 @@
                     </div>
                     <div class="project-reference">
                         
-                <a href="@Url.Action("Project1", "Project", new { id = comment.Project?.Id })" class="btn">
+                <a href="@Url.Action("Project1", "Project", new { id = comment.Project?.Id })" class="btn project-link">
                     проекта от който е коментара (@comment.Project?.Title)
                 </a>
                     </div>
@@ -97,6 +99,12 @@
 
 </div>
 <style>
+    
+
+    a:hover {
+        text-decoration: underline;
+    }
+
     .project-reference{
         display: flex;
         flex-direction: column;

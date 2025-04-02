@@ -1,32 +1,32 @@
 ﻿@model CommentIndexFilterView
 @using System.Security.Claims
 
-<a asp-action="Create" class="back-button">Create new comment</a>
+<a asp-action="Create" class="back-button">Създай нов коментар</a>
 
 <form method="get">
     <div>
-        <label for="ProjectId">Project</label>
+        <label for="ProjectId"Проект:</label>
         <select asp-for="ProjectId" asp-items="Model.Projects"></select>
     </div>
     <div>
-        <label for="UserId">User</label>
+        <label for="UserId">Потребител: </label>
         <select asp-for="UserId" asp-items="Model.Users"></select>
     </div>
     <div>
-        <label for="Content">Content</label>
+        <label for="Content">Съдържание:</label>
         <input asp-for="Content" />
     </div>
-    <button type="submit">Filter</button>
+    <button type="submit">Филтрирай</button>
 </form>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Project</th>
-            <th>User</th>
-            <th>Content</th>
-            <th>image</th>
-            <th>действия</th>
+            <th>Проект</th>
+            <th>Потребител</th>
+            <th>Съдържание</th>
+            <th>Снимка</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -45,18 +45,20 @@
                     else
                     {
 
-                        <p>no picture</p>
+                        <p>Няма снимка</p>
                     }
 
                     </td>
                 <td>
-
-                    <a asp-action="Edit" asp-route-id="@comment.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@comment.Id">Details</a> |
+                    @if (User.IsInRole("Admin") || (comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    {
+                        <a asp-action="Edit" asp-route-id="@comment.Id">Промени коментара </a> <span>|</span>
+                    }
+                    <a asp-action="Details" asp-route-id="@comment.Id">Детайли за коментара</a> |
                     @* <a asp-action="Delete" asp-route-id="@comment.Id">Delete</a> *@
                     @if (User.IsInRole("Admin") || (comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
-                        <button type="button" class="btn btn-danger delete-comment" data-comment-id="@comment.Id">Delete</button>
+                        <button type="button" class="btn btn-danger delete-comment" data-comment-id="@comment.Id">Изтрий коментара</button>
                     }
                 </td>
             </tr>
@@ -76,7 +78,7 @@
             button.addEventListener('click', function() {
                 const commentId = this.getAttribute('data-comment-id');
 
-                if (confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+                if (confirm('Сигурни ли сте, че искате да изтриете коментара? Това действие не може да се върне върне назад.')) {
                     deleteComment(commentId);
                 }
             });
@@ -95,12 +97,12 @@
                 if (response.ok) {
                     window.location.reload();
                 } else {
-                    alert('Failed to delete the comment. Please try again.');
+                    alert('Неуспешно Изтриване на коментар. Пробвайте пак по-късно.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the comment.');
+                alert('Стана грешка по време на изтриване на коментара.');
             });
         }
 
