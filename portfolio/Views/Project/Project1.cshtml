@@ -106,7 +106,9 @@
                                             <i class="fa fa-ellipsis-v"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu@(comment.Id)">
-                                            <li><button class="dropdown-item edit-comment-btn" data-comment-id="@comment.Id">Edit</button></li>
+                                            @if ((comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier)){
+                                                <li><button class="dropdown-item edit-comment-btn" data-comment-id="@comment.Id">Edit</button></li>
+                                            }
                                             <li><button class="dropdown-item delete-comment-btn" data-comment-id="@comment.Id">Delete</button></li>
                                         </ul>
                                     </div>
