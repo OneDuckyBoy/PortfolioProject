@@ -118,7 +118,7 @@ namespace Portfolio.Controllers
             List<Comment> likedByUser = _commentService.GetAll().AsQueryable()
                 .Include(p => p.Image)
                 .Include(p => p.User).ThenInclude(u=>u.ProfilePicture)
-                .Include(c=>c.Project)
+                .Include(c=>c.Project).ThenInclude(u => u.User)
                .Include(p => p.LikedComments)
                .Where(p => p.LikedComments.Any(lp => lp.UserId == userId))
                .ToList();
@@ -413,8 +413,8 @@ namespace Portfolio.Controllers
         }
 
         [Authorize]
-        [HttpPost("Comment/Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost("Comment/Delete1/{id}")]
+        public async Task<IActionResult> Delete1(int id)
         {
             var comment = _commentService.GetById(id);
             if (comment == null)
@@ -444,6 +444,50 @@ namespace Portfolio.Controllers
             }
 
             // For non-AJAX requests, redirect as before
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        [HttpPost("Comment/Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var comment = _commentService.GetById(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var isOwner = comment.UserId == user.Id;
+            if (!isAdmin && !isOwner)
+            {
+                return Forbid();
+            }
+            var likedComments = _likedCommentsService.GetAll().Where(lc => lc.CommentId == id).ToList();
+            foreach (var likedComment in likedComments)
+            {
+                _likedCommentsService.DeleteFromLikedComments(likedComment.Id,likedComment.UserId);
+            }
+
+
+            _commentService.Delete(id);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true });
+            }
+
             var referer = Request.Headers["Referer"].ToString();
             if (!string.IsNullOrEmpty(referer))
             {
