@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.WebUtilities;
 using Portfolio.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Portfolio.Areas.Identity.Pages.Account.Manage
@@ -80,20 +82,10 @@ namespace Portfolio.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            //if (!ModelState.IsValid)
-            //{
-            //    await LoadAsync(user);
-            //    return Page();
-            //}
             if (string.IsNullOrWhiteSpace(Input.Username))
             {
                 ModelState.AddModelError("Input.Username", "Username is required.");
             }
-
-            //if (string.IsNullOrWhiteSpace(Input.Email) || !new EmailAddressAttribute().IsValid(Input.Email))
-            //{
-            //    ModelState.AddModelError("Input.Email", "A valid email is required.");
-            //}
 
             if (string.IsNullOrWhiteSpace(Input.PhoneNumber) || !new PhoneAttribute().IsValid(Input.PhoneNumber))
             {
@@ -132,5 +124,41 @@ namespace Portfolio.Areas.Identity.Pages.Account.Manage
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
+
+        public async Task<IActionResult> OnPostGenerateResetTokenAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ResetPassword",
+                pageHandler: null,
+                values: new { area = "Identity", code },
+                protocol: Request.Scheme);
+
+            return Redirect(callbackUrl);
+        }
+    }
+
+    public class ProfileViewModel
+    {
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Phone]
+        public string PhoneNumber { get; set; }
+
+        public string ProfilePictureUrl { get; set; }
+
+        public IFormFile ProfilePicture { get; set; }
     }
 }

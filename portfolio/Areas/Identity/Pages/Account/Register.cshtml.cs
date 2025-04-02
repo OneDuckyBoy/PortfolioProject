@@ -32,6 +32,8 @@ namespace Portfolio.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly IImageUploadService _imageUploadService;
+        private readonly RoleManager<Role> _roleManager;
+
 
         public RegisterModel(
             UserManager<User> userManager,
@@ -39,7 +41,8 @@ namespace Portfolio.Areas.Identity.Pages.Account
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IImageUploadService imageUploadService)
+            IImageUploadService imageUploadService,
+            RoleManager<Role> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -48,6 +51,7 @@ namespace Portfolio.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _imageUploadService = imageUploadService;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -131,7 +135,15 @@ namespace Portfolio.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+
                     _logger.LogInformation("User created a new account with password.");
+                    if (!await _roleManager.RoleExistsAsync(RoleType.User.ToString()))
+                    {
+                        await _roleManager.CreateAsync(new Role { Name = RoleType.User.ToString() });
+                    }
+
+                    // Assign the "User" role to the new user
+                    await _userManager.AddToRoleAsync(user, RoleType.User.ToString());
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

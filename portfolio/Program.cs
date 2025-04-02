@@ -47,7 +47,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(IRoleRepository<>), typeof(RoleRepository<>));
 
 builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
-builder.Services.AddScoped(typeof(IRoleService<>), typeof(RoleService<>));
+builder.Services.AddScoped(typeof(IRoleService1<>), typeof(RoleService<>));
 
 
 
