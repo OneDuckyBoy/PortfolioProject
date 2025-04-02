@@ -14,10 +14,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Images</h1>
-        <a asp-action="Create" class="btn btn-primary mb-3">Add new Image</a>
+        <h1>Снимки</h1>
+        <a asp-action="Create" class="btn btn-primary mb-3">Добави нова Снимка</a>
         <div class="form-group">
-            <label for="imagesPerRow">Images per row:</label>
+            <label for="imagesPerRow">Снимки на ред:</label>
             <select id="imagesPerRow" class="form-control" style="width: auto;" onchange="updateGrid()">
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -31,12 +31,12 @@
                     <div class="card">
                         <img class="card-img-top" src="@image.Path" alt="@image.Path">
                         <div class="card-body">
-                            <p class="card-text">ID: @image.Id</p>
+                            <p class="card-text">ИД: @image.Id</p>
                             @* <p class="card-text">Path: @image.Path</p> *@
                             <p class="card-text">
-                                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@image.Id">Edit</a> |
-                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@image.Id">Details</a> |
-                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@image.Id">Delete</a>
+                                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@image.Id">Промени</a> |
+                                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@image.Id">Детайли за снимката</a> |
+                                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@image.Id">Изтрий снимката</a>
                             </p>
                         </div>
                     </div>

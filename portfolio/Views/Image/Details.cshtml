@@ -9,11 +9,12 @@
     <div class="card">
         <img class="card-img-top" src="@Model.Path" alt="@Model.Path">
         <div class="card-body">
-            <p class="card-text">ID: @Model.Id</p>
-            @* <p class="card-text">Path: @image.Path</p> *@
+            <p class="card-text">ИД: @Model.Id</p>
+            <p class="card-text">Път до снимката: @Model.Path</p>
+
             <p class="card-text">
-                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> 
-                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Промени снимката</a> 
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Изтрий снимката</a>
             </p>
         </div>
     </div>
