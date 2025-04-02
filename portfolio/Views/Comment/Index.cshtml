@@ -50,6 +50,7 @@
 
                     </td>
                 <td>
+
                     <a asp-action="Edit" asp-route-id="@comment.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@comment.Id">Details</a> |
                     @* <a asp-action="Delete" asp-route-id="@comment.Id">Delete</a> *@
@@ -92,7 +93,6 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Reload the page after successful deletion
                     window.location.reload();
                 } else {
                     alert('Failed to delete the comment. Please try again.');
@@ -103,5 +103,6 @@
                 alert('An error occurred while deleting the comment.');
             });
         }
+
     });
 </script>

@@ -79,7 +79,10 @@
                         }
                     </div>
                     <div class="project-reference">
-                        <a class="btn " asp-controller="Project" asp-action="Project1" asp-route-id="@comment.Project.Id">проекта от който е коментара (@comment.Project.Title)</a>
+                        
+                <a href="@Url.Action("Project1", "Project", new { id = comment.Project?.Id })" class="btn">
+                    проекта от който е коментара (@comment.Project?.Title)
+                </a>
                     </div>
                 </div>
                 

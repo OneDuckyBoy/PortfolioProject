@@ -82,13 +82,13 @@
                 .HasOne(lc => lc.User)
                 .WithMany(u => u.LikedComments)
                 .HasForeignKey(lc => lc.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<LikedComments>()
                 .HasOne(lc => lc.Comment)
                 .WithMany(c => c.LikedComments)
                 .HasForeignKey(lc => lc.CommentId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Comment -> Project (Many-to-One)
             modelBuilder.Entity<Comment>()
