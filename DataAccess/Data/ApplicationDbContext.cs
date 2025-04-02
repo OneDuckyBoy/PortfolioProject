@@ -20,8 +20,8 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Image>().HasData(
-               new Image { Id = 1, Path = "path1" },
-               new Image { Id = 2, Path = "path2" },
+               new Image { Id = 1, Path = "https://res.cloudinary.com/dgh3d67mh/image/upload/v1738515520/cld-sample-3.jpg" },
+               new Image { Id = 2, Path = "https://res.cloudinary.com/dgh3d67mh/image/upload/v1738515519/samples/dessert-on-a-plate.jpg" },
                new Image { Id = 3, Path = "path3" },
                new Image { Id = 4, Path = "path4" },
                new Image { Id = 5, Path = "path5" },
