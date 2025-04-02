@@ -25,7 +25,7 @@
         <select asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))" class="form-control"></select>
         <span asp-validation-for="CategoryId" class="alert-danger"></span>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Запази</button>
     </div>
 </form>
 @*

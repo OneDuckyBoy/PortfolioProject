@@ -37,7 +37,7 @@
     <section class="project-details">
         <div class="container">
             <div class="project-details-header">
-                <h2>Project Details</h2>
+                <h2>Детайли за проекта</h2>
                 @if (User.IsInRole("Admin"))
                 {
                 <div class="dropdown project-details-menu">
@@ -45,7 +45,7 @@
                         <i class="fa fa-ellipsis-v"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="projectDetailsMenu">
-                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Edit</a></li>
+                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@Model.Id">Промени</a></li>
                     </ul>
                 </div>
                 }
@@ -56,8 +56,8 @@
     <div class="divider"></div>
     <section class="comments">
         <div class="container">
-            <h2>Comments</h2>
-            <button class="revealAddCommentSection">Add Comment</button>
+            <h2>Коментари</h2>
+            <button class="revealAddCommentSection">Добави коментар</button>
             <section class="addCommentSection" style="display: none;">
                 @*  <form id="addCommentForm" method="post" enctype="multipart/form-data" action="/Comment/AddComment">
                     <input type="hidden" name="projectId" value="@Model.Id" />

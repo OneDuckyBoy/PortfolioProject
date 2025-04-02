@@ -10,7 +10,7 @@
 
 <body>
     <div class="container">
-        <h1>Edit Project</h1>
+        <h1>Променете проекта</h1>
         <form asp-action="Edit" method="post">
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -45,9 +45,9 @@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="UserId" />
             <input type="hidden" asp-for="ImageId" />
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a asp-action="Project1" asp-route-id="@Model.Id" class="btn btn-secondary">Back to project</a>
-            <a asp-action="Index"  class="btn btn-secondary">Back to List</a>
+            <button type="submit" class="btn btn-primary">Запази промените</button>
+            <a asp-action="Project1" asp-route-id="@Model.Id" class="btn btn-secondary">Назад към проекта</a>
+            <a asp-action="Index"  class="btn btn-secondary">Назад към списъка</a>
         </form>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
