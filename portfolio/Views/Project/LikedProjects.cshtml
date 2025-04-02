@@ -1,0 +1,180 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Security.Claims
+@{
+    // var userId = User.Identity.IsAuthenticated ? int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : (int?)null;
+        
+    var userId = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
+
+}
+@model List<Portfolio.Models.Project>
+@* liked projects *@
+<div id="currmain" project-user-name="@(Model.FirstOrDefault()?.User.UserName)">
+@if (Model != null && Model.Any())
+{
+    @* <table class="table table-striped"> *@
+    @*     <thead> *@
+    @*         <tr> *@
+    @*             <th>Title</th> *@
+    @*             <th>Short Description</th> *@
+    @*             <th>Category</th> *@
+    @*             <th>Image</th> *@
+    @*             <th>Actions</th> *@
+    @*         </tr> *@
+    @*     </thead> *@
+    @*     <tbody> *@
+        <section class="project-cards">
+            @foreach (Project project in Model)
+            {
+        <div class="project-card">
+            <a asp-action="Project1" asp-route-id="@project.Id">
+                <img class="project-image" src="@project.Image.Path" alt="@project.Title">
+            </a>
+            <div class="project-info">
+                <div class="heart-container">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <i class="fa @(@project.LikedProjects.Any(l => l.UserId+"" == userId&& l.ProjectId == project.Id) ? "fa-heart" : "fa-heart-o") like-button project-like"
+                           data-project-id="@project.Id"></i>
+
+                    }
+                    else
+                    {
+                        <i class="fa fa-heart-o like-button project-like" data-project-id="@project.Id"></i>
+                    }
+                </div>
+                <h3>@Html.DisplayFor(modelItem => project.Title)</h3>
+                <p>@Html.DisplayFor(modelItem => project.ShortDescription)</p>
+                <p><strong>Категория:</strong> @Html.DisplayFor(modelItem => project.Category.Name)</p>
+                <a class="btn btn-primary" asp-action="Project1" asp-route-id="@project.Id">Details</a>
+            </div>
+        </div>
+        
+            }
+            </section>
+    @*     </tbody> *@
+    @* </table> *@
+}
+
+else
+{
+    <p>No liked projects found.</p>
+}
+
+</div>
+<style>
+    :root {
+        --left-margin: 0px;
+        --projects-per-row: 3;
+    }
+    .project-cards {
+        display: grid;
+        grid-template-columns: repeat(var(--projects-per-row), 300px);
+        gap: 15px;
+        justify-content: start;
+        flex-grow: 1;
+    }
+
+    .project-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 300px;
+        transition: transform 0.2s;
+    }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .project-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .project-info {
+        padding: 15px;/* 
+        display: flex;
+        flex-direction:column; */
+    }
+
+    .like-button {
+        cursor: pointer;
+        color: #888;
+        align-self: flex-end;
+        padding-top:10px;
+        padding-right:10px;
+    }
+
+    .heart-container{
+        display: flex;
+        flex-direction: column;
+    }
+
+        .like-button.fa-heart {
+            color: red;
+        }
+</style>
+
+<script>
+    console.log("the JS works ok")
+
+
+    document.querySelectorAll(".like-button").forEach(button => {
+            
+
+        console.log(button)
+    // button = document.getElementsByClassName("project-like")[0]
+    button.addEventListener("click", function () {
+        console.log("Start liking the project");
+             let projectId = this.getAttribute("data-project-id");
+             //let likeCountSpan = this.closest(".comment-actions").querySelector(".like-count");
+             const userId = "@User .FindFirstValue(ClaimTypes.NameIdentifier)"; // дава логнатия юзър
+             console.log(projectId);
+
+            let username = document.getElementById("currmain").getAttribute("project-user-name");
+
+
+             
+              console.log(username);
+             let main = document.getElementById("currmain");
+                 console.log(main)
+         //         if (!main.classList.contains("authenticated")) {
+         //    // Пренасочване към страницата за вход
+         //     let loginUrl = document.getElementById("login");
+         //     window.location.href = loginUrl;
+         //     console.log("not logged in");
+         //     return;
+         // }
+             if (this.classList.contains("fa-heart-o")) {
+
+
+                  fetch(`/Project/LikeProject/${projectId}/${username}`, {
+                 method: "POST"
+             })
+             console.log("liked start");
+                 this.classList.remove("fa-heart-o");
+                 this.classList.add("fa-heart");//Пълно сърце
+                //likeCountSpan.textContent = parseInt(likeCountSpan.textContent) + 1;// Увеличаване на брояча
+                 console.log("liked end");
+             }
+             else if (this.classList.contains("fa-heart")){
+                    fetch(`/Project/removeLikeFromProject/${projectId}/${username}`, {
+                 method: "POST"
+             })
+                 console.log("disliked start");
+                 this.classList.remove("fa-heart");
+                 this.classList.add("fa-heart-o")//;Празно сърце
+                 //likeCountSpan.textContent = parseInt(likeCountSpan.textContent) - 1; //Намаляване на брояча
+                 console.log("disliked end");
+             }
+         });
+    });
+    //});
+
+</script>
+<script src="https://kit.fontawesome.com/734a4e4265.js" crossorigin="anonymous"></script>

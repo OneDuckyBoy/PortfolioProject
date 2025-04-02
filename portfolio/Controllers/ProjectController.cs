@@ -246,14 +246,19 @@ namespace Portfolio.Controllers
 
             int userId = user.Id;
             //var likedProject = project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
-            var likedProject = _likedProjectsService.GetAll().Select(l => l.ProjectId == projectId && l.UserId == userId).ToList();//project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
-
-            if (likedProject.Count()==1)//for some reason it is one, when it is empty
+            var likedProject = _likedProjectsService.GetAll().Where(l => l.ProjectId == projectId && l.UserId == userId).ToList();//project.LikedProjects.FirstOrDefault(lc => lc.UserId == currUser.Id);
+            int lpCount = likedProject.Count();
+            if (likedProject.Count() == 0)//for some reason it is one, when it is empty
             {
                 project.LikedProjects.Add(new LikedProjects { UserId = currUser.Id, ProjectId = projectId });
                 Console.WriteLine();
             }
-            
+            //if (likedProject.Count() == 1)//for some reason it is one, when it is empty
+            //{
+            //    project.LikedProjects.Add(new LikedProjects { UserId = currUser.Id, ProjectId = projectId });
+            //    Console.WriteLine();
+            //}
+
             _projectService.Update(project);
 
             var likeCount = project.LikedProjects.Count;
@@ -296,8 +301,21 @@ namespace Portfolio.Controllers
             return Json(new { removed = likedProject != null, likeCount });
         }
 
-
-
+        [Authorize]
+        [Route("LikedProjects")]
+        public async Task<IActionResult> LikedProjects()
+        {
+            int userId = _userManager.GetUserAsync(User).Result.Id;
+            //var likedByUser= _projectService.GetAll().AsQueryable().Include(p => p.LikedProjects).Where(u => u.User.Id == userId).ToList();
+            List<Project> likedByUser = _projectService.GetAll().AsQueryable()
+                .Include(p=>p.Image)
+                .Include(p=>p.User)
+                .Include(p=>p.Category)
+   .Include(p => p.LikedProjects)
+   .Where(p => p.LikedProjects.Any(lp => lp.UserId == userId))
+   .ToList();
+            return View(likedByUser);
+        }
 
 
         [Route("Project/{id}")]
