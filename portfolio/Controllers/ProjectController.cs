@@ -176,59 +176,7 @@ namespace Portfolio.Controllers
             Console.WriteLine();
             return View(project);
         }
-        [Route("Project2/{id}")]
-        public IActionResult Project2(int id)
-        {
-            //Project project = _projectService.GetById(id);
-            //if (project==null)
-            //{
-            //    Console.WriteLine("???");
-            //}
-            User currentUser;
-
-            if (User.Identity.IsAuthenticated)
-            {
-                // Потребителят е логнат
-                currentUser = _userManager.GetUserAsync(User).Result;
-                
-            }
-            else
-            {
-                int defaultUserId = 1006;
-                currentUser = _userManager.FindByIdAsync(defaultUserId.ToString()).Result;
-            }
-            if (id == 0)
-            {
-                return BadRequest("Invalid project ID.");
-            }
-
-            Project project = _projectService.GetById(id);
-            if (project == null)
-            {
-                return NotFound("Project not found.");
-            }
-
-            project.Category = _categoryService.GetById(project.CategoryId);
-            project.Comments = _commentCategory.GetAll().AsQueryable().Include(c=>c.Image).Include(c=>c.LikedComments).Include(c=>c.User).Where(c => c.ProjectId == project.Id).ToList();
-            project.Image = _imageService.GetById(project.ImageId);
-            var user = _userManager.FindByIdAsync((project.UserId + "")).Result;
-            Image userImage = _imageService.GetById(user.ProfilePictureId.Value);
-            user.ProfilePicture = userImage;
-            
-            // todo
-            project.User = user;
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool hasLiked = false;
-            if (!string.IsNullOrEmpty(currentUserId))
-            {
-                int count =project.Comments.Where(c => (c.UserId + "").Equals(currentUserId)).Count();
-                hasLiked = count == 1;
-            }
-
-
-            Console.WriteLine();
-            return View(project);
-        }
+      
 
         [Authorize]
         [HttpPost("Project/LikeProject/{projectId}/{username}")]
