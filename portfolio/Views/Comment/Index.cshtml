@@ -50,7 +50,7 @@
 
                     </td>
                 <td>
-                    @if (User.IsInRole("Admin") || (comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    @if ((comment.UserId + "") == User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
                         <a asp-action="Edit" asp-route-id="@comment.Id">Промени коментара </a> <span>|</span>
                     }

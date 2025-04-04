@@ -59,12 +59,12 @@ namespace Portfolio.Controllers
             {
                 return NotFound();
             }
-            User user = await _userManager.FindByNameAsync(username);
+            //User user = await _userManager.FindByNameAsync(username);
             //var currUser = await _userManager.GetUserAsync(User);//1;//
             var userId1 = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currUser = await _userManager.FindByIdAsync(userId1);
 
-            int userId = user.Id;
+            int userId = currUser.Id;
             var likedComment = comment.LikedComments.FirstOrDefault(lc => lc.UserId == currUser.Id);
             if (likedComment == null)
             {
@@ -224,7 +224,7 @@ namespace Portfolio.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CommentEditViewModel viewModel)
+        public async Task<IActionResult> EditAdmin(CommentEditViewModel viewModel)
         {
             if (_ProjectService.EntityExists(viewModel.ProjectId) && !viewModel.Text.IsNullOrEmpty())
             {
