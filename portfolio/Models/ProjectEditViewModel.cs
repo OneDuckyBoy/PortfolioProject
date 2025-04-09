@@ -12,23 +12,23 @@ namespace Portfolio.Models
         public string Title { get; set; } = string.Empty;
 
         [MaxLength(300)]
-        public string ShortDescription { get; set; } = string.Empty; // Optional summary
+        public string ShortDescription { get; set; } = string.Empty; 
 
-        public string Description { get; set; } = string.Empty; // Full description
+        public string Description { get; set; } = string.Empty; 
 
         [Required]
-        public int CategoryId { get; set; } // Foreign key
+        public int CategoryId { get; set; } 
 
        
-        //public string CategoryName { get; set; } // To display the category name
+        
 
-        public int UserId { get; set; } // Foreign key
+        public int UserId { get; set; } 
 
-        public string UserEmail { get; set; } // To display the user email
+        public string UserEmail { get; set; }
 
-        public int? ImageId { get; set; } // Foreign key (optional)
+        public int? ImageId { get; set; } 
 
-        public string ImagePath { get; set; } // To display the image path
+        public string ImagePath { get; set; } 
 
 
         public IEnumerable<Category> Categories { get; set; } = new List<Category>();

@@ -123,7 +123,7 @@ namespace ProjectTests
             _mockCategoryService.Setup(service => service.GetById(It.IsAny<int>())).Returns(new Category());
 
             // Act
-            var result = _controller.Create(viewModel);
+            var result = _controller.CreateAsync(viewModel);
 
             // Assert
             Assert.IsInstanceOf<RedirectToActionResult>(result);
@@ -137,7 +137,7 @@ namespace ProjectTests
             _controller.ModelState.AddModelError("Title", "Required");
 
             // Act
-            var result = _controller.Create(viewModel);
+            var result = _controller.CreateAsync(viewModel);
 
             // Assert
             Assert.IsInstanceOf<ViewResult>(result);

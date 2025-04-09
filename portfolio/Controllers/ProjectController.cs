@@ -77,9 +77,6 @@ namespace Portfolio.Controllers
         [Route("Projects")]
         public IActionResult All(ProjectIndexFilterModelView? filter)
         {
-
-            var likedByUser = _projectService.GetAll().AsQueryable().Include(p => p.LikedProjects).ThenInclude(lp => lp.User).Where(u => u.User == _userManager.GetUserAsync(User).Result);
-
             var query = _projectService.GetAll().AsQueryable();
             if (filter.CategoryId != null)
             {
@@ -93,7 +90,6 @@ namespace Portfolio.Controllers
             {
                 query = query.Where(p => p.ShortDescription.Contains(filter.ShortDescription));
             }
-
             var model = new ProjectIndexFilterModelView
             {
                 CategoryId = filter.CategoryId,
@@ -103,18 +99,10 @@ namespace Portfolio.Controllers
                 Projects = query.Include(p => p.Category).Include(p => p.Image).ToList(),
             };
 
-            IEnumerable<Project> projects = _projectService.GetAll().ToList();
-            IEnumerable<Image> images = _imageService.GetAll();
-            IEnumerable<Category> categories = _categoryService.GetAll().ToList();
-            foreach (var item in projects)
-            {
-                item.Image = images.FirstOrDefault(img => img.Id == item.ImageId);
-                item.Category = categories.FirstOrDefault(cat => cat.Id == item.CategoryId);
-            }
-
-            ViewData["message from controller"] = "Hello from the backend : )";
             return View(model);
         }
+
+
         [Route("Project/Create")]
         public IActionResult Create()
         {
@@ -128,15 +116,20 @@ namespace Portfolio.Controllers
 
         [HttpPost]
         [Route("Project/Create")]
-        public IActionResult Create(ProjectCreateViewModel viewModel)
+        public async Task<IActionResult> CreateAsync(ProjectCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
 
-                var user = _userManager.GetUserAsync(User);
-                if (user.Result == null)
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
                 {
                     return Unauthorized();
+                }
+                var isAdmin = await _userManager.IsInRoleAsync( user, "Admin");
+                if (!isAdmin)
+                {
+                    return Forbid();
                 }
                 var project = new Project
                 {
@@ -151,7 +144,7 @@ namespace Portfolio.Controllers
                 image.Path = _ImageUploadService.UploadImageAsync(viewModel.Image).Result;
                 project.Image = _imageService.Add(image);
                 project.Category = _categoryService.GetById(project.CategoryId);
-                project.User = user.Result;
+                project.User = user;
                 _projectService.Add(project);
                 return RedirectToAction("Index");
             }
@@ -326,7 +319,7 @@ namespace Portfolio.Controllers
 
 
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var categories = _categoryService.GetAll().ToList();
 
@@ -336,16 +329,20 @@ namespace Portfolio.Controllers
                 return NotFound();
             }
 
+
             project.Category = _categoryService.GetById(project.CategoryId);
             project.Image = _imageService.GetById(project.ImageId);
-            var user = _userManager.FindByIdAsync((project.UserId + ""));
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-
-                project.User = new User();
-                project.User.Email = "unknow user";
+                return Unauthorized();
             }
-            project.User = user.Result;
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            if (!isAdmin)
+            {
+                return Forbid();
+            }
+            project.User = user;
 
             var viewModel = new ProjectEditViewModel
             {
